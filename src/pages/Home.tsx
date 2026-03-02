@@ -42,6 +42,7 @@ function Home() {
             <a href="#topics">Topics</a>
             <a href="#community">Community</a>
             <Link to="/lab" className="text-gradient" style={{ fontWeight: 700 }}>3D Atomic Lab</Link>
+            <Link to="/chemist-lab" className="text-gradient" style={{ fontWeight: 700 }}>Virtual Chem Lab</Link>
             <a href="https://www.facebook.com/share/1E2hRqzqDW/" target="_blank" rel="noreferrer" className="btn btn-primary" style={{ padding: '8px 20px', fontSize: '0.9rem', color: 'white' }}>Join Page</a>
           </nav>
         </div>
