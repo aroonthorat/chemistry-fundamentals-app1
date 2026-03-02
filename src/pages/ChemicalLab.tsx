@@ -456,6 +456,152 @@ const DecompositionReaction = () => {
         </div>
     );
 };
+// Generic Drop Reaction (Metal + Solution)
+const GenericDropReaction = ({ solidName, solidStartColor, solidEndColor, liquidStartColor, liquidEndColor, liquidStartName, liquidEndName, equation, description, reactionSpeed = 2, hasBubbles = false, dissolveSolid = false }: any) => {
+    const [dropped, setDropped] = useState(false);
+    const [progress, setProgress] = useState(0);
+
+    useEffect(() => {
+        if (dropped && progress < 100) {
+            const timer = setInterval(() => setProgress(p => Math.min(p + reactionSpeed, 100)), 100);
+            return () => clearInterval(timer);
+        }
+    }, [dropped, progress, reactionSpeed]);
+
+    const isComplete = progress === 100;
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', alignItems: 'flex-end', height: '250px' }}>
+                <AnimatePresence>
+                    {!dropped && (
+                        <motion.div exit={{ y: 150, opacity: 0 }} transition={{ duration: 0.5 }} style={{ paddingBottom: '50px' }}>
+                            <div style={{ marginBottom: '10px', fontSize: '1.2rem', fontWeight: 'bold' }}>{solidName}</div>
+                            <button onClick={() => setDropped(true)} style={{ width: '60px', height: '60px', background: solidStartColor, border: '2px solid rgba(255,255,255,0.3)', borderRadius: '8px', cursor: 'pointer', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }} />
+                            <div style={{ marginTop: '10px', color: 'var(--accent-cyan)', fontSize: '0.9rem' }}>Click to drop</div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '-40px', width: '100%', textAlign: 'center', fontWeight: 'bold' }}>
+                        {isComplete ? liquidEndName : liquidStartName}
+                    </div>
+                    <GlassBeaker
+                        color={isComplete ? liquidEndColor : liquidStartColor}
+                        liquidHeight={60}
+                        hasSolid={dropped}
+                        solidColor={isComplete ? solidEndColor : solidStartColor}
+                        solidOpacity={dissolveSolid ? 1 - (progress / 100) : 1}
+                    />
+                    {dropped && hasBubbles && progress < 100 && (
+                        <div style={{ position: 'absolute', bottom: '30px', left: '50%', transform: 'translateX(-50%)', pointerEvents: 'none' }}>
+                            <motion.div animate={{ y: [0, -60], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.5 } as any} style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)' }} />
+                            <motion.div animate={{ y: [0, -70], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 } as any} style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', marginLeft: '10px' }} />
+                        </div>
+                    )}
+                </div>
+            </div>
+            <div style={{ marginTop: '40px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <h4 style={{ marginBottom: '10px', color: 'var(--text-secondary)' }}>Reaction Progress</h4>
+                <div style={{ width: '100%', height: '10px', background: 'rgba(255,255,255,0.1)', borderRadius: '5px', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${progress}%`, background: 'var(--gradient-main)', transition: 'width 0.1s linear' }} />
+                </div>
+                <p style={{ marginTop: '15px', fontSize: '0.9rem' }}>
+                    <strong>{equation}</strong><br />{description}
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// Generic Mix Reaction (Two Liquids pouring into one)
+const GenericMixReaction = ({ liquid1Name, liquid1Color, liquid2Name, liquid2Color, resultName, resultColor, hasPpt, pptColor, equation, description }: any) => {
+    const [mixed, setMixed] = useState(false);
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', alignItems: 'flex-end', height: '250px' }}>
+                <AnimatePresence>
+                    {!mixed && (
+                        <motion.div exit={{ opacity: 0, y: -50, x: 50, rotate: 45 }} transition={{ duration: 1 }} style={{ paddingBottom: '20px' }}>
+                            <div style={{ position: 'relative' }}>
+                                <div style={{ position: 'absolute', top: '-40px', width: '100%', textAlign: 'center', fontWeight: 'bold' }}>{liquid1Name}</div>
+                                <GlassBeaker color={liquid1Color} liquidHeight={40} />
+                                <button onClick={() => setMixed(true)} style={{ marginTop: '20px', padding: '10px 20px', background: 'var(--accent-cyan)', color: 'black', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 15px rgba(0,255,255,0.3)' }}>Pour Liquid</button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '-40px', width: '100%', textAlign: 'center', fontWeight: 'bold' }}>
+                        {mixed ? resultName : liquid2Name}
+                    </div>
+                    <GlassBeaker
+                        color={mixed ? resultColor : liquid2Color}
+                        liquidHeight={mixed ? 80 : 40}
+                        hasSolid={mixed && hasPpt}
+                        solidColor={pptColor}
+                        solidOpacity={1}
+                    />
+                </div>
+            </div>
+            <div style={{ marginTop: '40px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <p style={{ marginTop: '15px', fontSize: '0.9rem' }}>
+                    <strong>{equation}</strong><br />{description}
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// Reaction: Electrolysis of Water
+const ElectrolysisLab = () => {
+    const [voltage, setVoltage] = useState(0);
+    const bubbling = voltage > 5;
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ height: '250px', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', position: 'relative' }}>
+                {/* Two Test Tubes over electrodes */}
+                <div style={{ position: 'absolute', bottom: '20px', display: 'flex', gap: '20px', zIndex: 5 }}>
+                    {/* Anode (O2) */}
+                    <div style={{ position: 'relative', width: '30px', height: '120px', border: '2px solid rgba(255,255,255,0.4)', borderBottom: 'none', borderRadius: '15px 15px 0 0', background: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                        {bubbling && (
+                            <motion.div animate={{ y: [0, -130], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.2 } as any} style={{ position: 'absolute', bottom: '10px', left: '10px', width: '8px', height: '8px', borderRadius: '50%', background: 'white' }} />
+                        )}
+                        <div style={{ position: 'absolute', bottom: '-20px', width: '10px', height: '40px', background: '#333', left: '10px' }} /> {/* Electrode */}
+                        <div style={{ position: 'absolute', top: '10px', width: '100%', textAlign: 'center', fontSize: '0.8rem', fontWeight: 'bold', textShadow: '0 0 5px black' }}>O₂</div>
+                    </div>
+                    {/* Cathode (H2) - more bubbles */}
+                    <div style={{ position: 'relative', width: '30px', height: '120px', border: '2px solid rgba(255,255,255,0.4)', borderBottom: 'none', borderRadius: '15px 15px 0 0', background: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                        {bubbling && (
+                            <>
+                                <motion.div animate={{ y: [0, -130], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.6 } as any} style={{ position: 'absolute', bottom: '10px', left: '5px', width: '6px', height: '6px', borderRadius: '50%', background: 'white' }} />
+                                <motion.div animate={{ y: [0, -130], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.7, delay: 0.3 } as any} style={{ position: 'absolute', bottom: '15px', left: '15px', width: '6px', height: '6px', borderRadius: '50%', background: 'white' }} />
+                            </>
+                        )}
+                        <div style={{ position: 'absolute', bottom: '-20px', width: '10px', height: '40px', background: '#333', left: '10px' }} />
+                        <div style={{ position: 'absolute', top: '10px', width: '100%', textAlign: 'center', fontSize: '0.8rem', fontWeight: 'bold', textShadow: '0 0 5px black' }}>H₂</div>
+                    </div>
+                </div>
+
+                <GlassBeaker color="rgba(0, 150, 255, 0.2)" liquidHeight={90} />
+            </div>
+
+            <div style={{ marginTop: '40px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <Zap color={voltage > 5 ? 'var(--accent-cyan)' : 'white'} />
+                    <input type="range" min="0" max="15" value={voltage} onChange={(e) => setVoltage(parseInt(e.target.value))} style={{ flex: 1, accentColor: voltage > 5 ? 'var(--accent-cyan)' : 'white' }} />
+                    <span style={{ width: '60px', textAlign: 'right', fontWeight: 'bold' }}>{voltage} V</span>
+                </div>
+                <p style={{ marginTop: '15px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    <strong>2H₂O(l) → 2H₂(g) + O₂(g)</strong><br />
+                    Apply voltage &gt; 5V to split water using electrodes. Notice the Cathode produces 2x more Hydrogen gas bubbles than Oxygen at the Anode!
+                </p>
+            </div>
+        </div>
+    );
+}
 
 // Main Lab Component
 export default function ChemicalLab() {
@@ -472,22 +618,22 @@ export default function ChemicalLab() {
         {
             title: "Decomposition Reactions", icon: <BoxSelect size={18} />, reactions: [
                 { id: 4, name: "CaCO₃ → CaO + CO₂", active: true, comp: <DecompositionReaction /> },
-                { id: 5, name: "Electrolysis of Water", active: false },
+                { id: 5, name: "Electrolysis of Water", active: true, comp: <ElectrolysisLab /> },
                 { id: 6, name: "Hydrogen Peroxide → Water + Oxygen", active: false }
             ]
         },
         {
             title: "Single Displacement", icon: <ArrowLeft size={18} />, reactions: [
                 { id: 7, name: "Zinc + Copper Sulfate", active: true, comp: <DisplacementReaction /> },
-                { id: 8, name: "Iron + Copper Sulfate", active: false },
-                { id: 9, name: "Copper + Silver Nitrate", active: false }
+                { id: 8, name: "Iron + Copper Sulfate", active: true, comp: <GenericDropReaction solidName="Fe (Iron)" solidStartColor="#8a8a8a" solidEndColor="#b87333" liquidStartColor="rgba(0, 150, 255, 0.6)" liquidEndColor="rgba(144, 238, 144, 0.4)" liquidStartName="CuSO₄ (aq)" liquidEndName="FeSO₄ (aq)" equation="Fe + CuSO₄ → FeSO₄ + Cu" description="Iron displaces Copper, turning the blue solution green and coating the iron in reddish-brown copper." /> },
+                { id: 9, name: "Copper + Silver Nitrate", active: true, comp: <GenericDropReaction solidName="Cu (Copper)" solidStartColor="#b87333" solidEndColor="#e0e0e0" liquidStartColor="rgba(255, 255, 255, 0.1)" liquidEndColor="rgba(0, 150, 255, 0.6)" liquidStartName="AgNO₃ (aq)" liquidEndName="Cu(NO₃)₂ (aq)" equation="Cu + 2AgNO₃ → Cu(NO₃)₂ + 2Ag" description="Copper displaces Silver. The solution turns blue (Copper Nitrate) and shiny silver crystals form." /> }
             ]
         },
         {
             title: "Double Displacement", icon: <Beaker size={18} />, reactions: [
-                { id: 10, name: "Silver Nitrate + NaCl", active: false },
-                { id: 11, name: "Barium Chloride + Na₂SO₄", active: false },
-                { id: 12, name: "Lead Nitrate + KI", active: false }
+                { id: 10, name: "Silver Nitrate + NaCl", active: true, comp: <GenericMixReaction liquid1Name="AgNO₃" liquid1Color="rgba(255,255,255,0.1)" liquid2Name="NaCl" liquid2Color="rgba(255,255,255,0.1)" resultName="NaNO₃ (aq) + AgCl (s)" resultColor="rgba(255,255,255,0.2)" hasPpt={true} pptColor="#ffffff" equation="AgNO₃ + NaCl → AgCl↓ + NaNO₃" description="Mixing two clear solutions forms a cloudy white precipitate of solid Silver Chloride." /> },
+                { id: 11, name: "Barium Chloride + Na₂SO₄", active: true, comp: <GenericMixReaction liquid1Name="BaCl₂" liquid1Color="rgba(255,255,255,0.1)" liquid2Name="Na₂SO₄" liquid2Color="rgba(255,255,255,0.1)" resultName="NaCl (aq) + BaSO₄ (s)" resultColor="rgba(255,255,255,0.2)" hasPpt={true} pptColor="#e8e8e8" equation="BaCl₂ + Na₂SO₄ → BaSO₄↓ + 2NaCl" description="Forms a thick, heavy white precipitate of Barium Sulfate." /> },
+                { id: 12, name: "Lead Nitrate + KI", active: true, comp: <GenericMixReaction liquid1Name="Pb(NO₃)₂" liquid1Color="rgba(255,255,255,0.1)" liquid2Name="KI" liquid2Color="rgba(255,255,255,0.1)" resultName="KNO₃ (aq) + PbI₂ (s)" resultColor="rgba(255, 255, 0, 0.3)" hasPpt={true} pptColor="#ffcc00" equation="Pb(NO₃)₂ + 2KI → PbI₂↓ + 2KNO₃" description="The famous 'Golden Rain' reaction. Mixing clear liquids instantly creates a bright yellow precipitate of Lead(II) Iodide." /> }
             ]
         },
         {
@@ -513,7 +659,7 @@ export default function ChemicalLab() {
         },
         {
             title: "Gas Evolution", icon: <Filter size={18} />, reactions: [
-                { id: 22, name: "Zinc + HCl → H₂ Gas", active: false },
+                { id: 22, name: "Zinc + HCl → H₂ Gas", active: true, comp: <GenericDropReaction solidName="Zn (Solid)" solidStartColor="#b0c4de" solidEndColor="#b0c4de" liquidStartColor="rgba(255,255,255,0.1)" liquidEndColor="rgba(255,255,255,0.1)" liquidStartName="HCl (aq)" liquidEndName="ZnCl₂ (aq)" equation="Zn + 2HCl → ZnCl₂ + H₂↑" description="Zinc metal dissolves in hydrochloric acid, producing rapid bubbling from Hydrogen gas!" hasBubbles={true} dissolveSolid={true} reactionSpeed={4} /> },
                 { id: 23, name: "Marble + HCl → CO₂", active: false },
                 { id: 24, name: "Ammonium Chloride + NaOH", active: false }
             ]
