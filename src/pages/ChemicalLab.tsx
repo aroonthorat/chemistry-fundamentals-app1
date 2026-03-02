@@ -284,6 +284,178 @@ const TitrationLab = () => {
     );
 };
 
+// Reaction: Magnesium Combustion (Mg + O2 -> MgO)
+const MagnesiumCombustion = () => {
+    const [ignite, setIgnite] = useState(false);
+    const [burnt, setBurnt] = useState(false);
+
+    const handleIgnite = () => {
+        setIgnite(true);
+        setTimeout(() => {
+            setIgnite(false);
+            setBurnt(true);
+        }, 1500); // 1.5 seconds of intense light
+    };
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <AnimatePresence>
+                {ignite && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 5 }}
+                        exit={{ opacity: 0 }}
+                        style={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)', background: 'radial-gradient(circle, #ffffff, #eeffff, transparent)', width: '300px', height: '300px', borderRadius: '50%', zIndex: 100, filter: 'blur(5px)', boxShadow: '0 0 100px 50px white' }}
+                    />
+                )}
+            </AnimatePresence>
+
+            <div style={{ height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                <div style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Tongs</div>
+                    {/* Ribbon or Ash */}
+                    {!burnt ? (
+                        <motion.div
+                            animate={ignite ? { opacity: [1, 0.8, 1], filter: ['brightness(1)', 'brightness(10)', 'brightness(1)'] } : {}}
+                            transition={ignite ? { repeat: Infinity, duration: 0.1 } as any : {}}
+                            style={{ width: '150px', height: '15px', background: '#d3d3d3', border: '1px solid #777', borderRadius: '2px', alignSelf: 'center', boxShadow: ignite ? '0 0 20px white' : 'none' }}
+                        />
+                    ) : (
+                        <div style={{ width: '100px', height: '20px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                            {/* Ash pieces */}
+                            {Array.from({ length: 15 }).map((_, i) => (
+                                <div key={i} style={{ width: '10px', height: '10px', background: 'white', borderRadius: '50%', opacity: 0.8 }} />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <div style={{ marginTop: '30px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px', position: 'relative', zIndex: 10 }}>
+                <p style={{ marginBottom: '15px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    Combustion: <strong>2Mg + O₂ → 2MgO</strong><br />
+                    Igniting magnesium produces an extremely bright white flame.
+                </p>
+                <button
+                    onClick={handleIgnite}
+                    disabled={ignite || burnt}
+                    style={{
+                        width: '100%', padding: '15px', borderRadius: '10px', border: 'none',
+                        background: (ignite || burnt) ? 'gray' : 'var(--accent-cyan)',
+                        color: (ignite || burnt) ? 'white' : 'black',
+                        cursor: (ignite || burnt) ? 'not-allowed' : 'pointer',
+                        fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
+                    }}>
+                    <Zap /> {burnt ? 'Reaction Complete (MgO ash)' : ignite ? 'Burning...' : 'Ignite Ribbon'}
+                </button>
+            </div>
+        </div>
+    );
+};
+
+// Reaction: Decomposition (CaCO3 -> CaO + CO2)
+const DecompositionReaction = () => {
+    const [heat, setHeat] = useState(20);
+    const [decomposed, setDecomposed] = useState(0); // 0 to 100
+
+    useEffect(() => {
+        if (heat > 800 && decomposed < 100) {
+            const timer = setInterval(() => {
+                setDecomposed(prev => Math.min(prev + 5, 100));
+            }, 500);
+            return () => clearInterval(timer);
+        }
+    }, [heat, decomposed]);
+
+    const isReacting = heat > 800 && decomposed < 100;
+    const flameHeight = Math.max(0, (heat - 20) / 1000 * 100);
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ height: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', position: 'relative' }}>
+
+                {/* Flask and Contents */}
+                <div style={{ position: 'relative', width: '100px', height: '120px', border: '4px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRadius: '0 0 30px 30px', backdropFilter: 'blur(2px)', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', paddingBottom: '10px', zIndex: 10, marginBottom: '20px' }}>
+                    {/* CO2 Bubbles / Gas */}
+                    <AnimatePresence>
+                        {isReacting && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 0 }}
+                                animate={{ opacity: [0, 1, 0], y: -150 }}
+                                transition={{ repeat: Infinity, duration: 1 } as any}
+                                style={{ position: 'absolute', top: '50%', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 'bold' }}
+                            >
+                                ↑ CO₂
+                            </motion.div>
+                        )}
+                        {decomposed > 0 && decomposed < 100 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 0 }}
+                                animate={{ opacity: [0, 1, 0], y: -160 }}
+                                transition={{ repeat: Infinity, duration: 1.2, delay: 0.2 } as any}
+                                style={{ position: 'absolute', top: '30%', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 'bold' }}
+                            >
+                                ↑ CO₂
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Solid Powder */}
+                    <div style={{ background: 'white', width: '60%', height: '30px', borderRadius: '50% 50% 10px 10px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'black', fontSize: '0.7rem', fontWeight: 'bold' }}>
+                        {decomposed === 100 ? 'CaO' : 'CaCO₃'}
+                    </div>
+                </div>
+
+                {/* Wire Gauze / Stand */}
+                <div style={{ width: '120px', height: '4px', background: '#555', borderRadius: '2px', position: 'absolute', bottom: '65px', zIndex: 5 }} />
+
+                {/* Bunsen Burner */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'absolute', bottom: '10px' }}>
+                    {/* Flame */}
+                    <div style={{ width: '30px', height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', marginBottom: '-5px', zIndex: 4 }}>
+                        <motion.div
+                            animate={{ height: `${flameHeight}px` }}
+                            transition={{ type: 'spring', bounce: 0.2 } as any}
+                            style={{ width: '100%', background: 'linear-gradient(to top, rgba(0, 100, 255, 0.8), rgba(0, 200, 255, 0.4), transparent)', borderRadius: '50% 50% 20% 20%', filter: 'blur(2px)' }}
+                        >
+                            {/* Inner cone */}
+                            <motion.div
+                                animate={{ height: `${flameHeight * 0.4}px` }}
+                                style={{ width: '60%', margin: '0 auto', background: 'rgba(200, 255, 255, 0.8)', borderRadius: '50% 50% 20% 20%' }}
+                            />
+                        </motion.div>
+                    </div>
+                    {/* Burner Body */}
+                    <div style={{ width: '15px', height: '40px', background: '#888', border: '1px solid #555', zIndex: 2 }} />
+                    <div style={{ width: '40px', height: '10px', background: '#444', borderRadius: '5px' }} />
+                </div>
+            </div>
+
+            <div style={{ marginTop: '20px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <p style={{ marginBottom: '15px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    Thermal Decomposition: <strong>CaCO₃(s) + Heat → CaO(s) + CO₂(g)</strong><br />
+                    Heat above 800°C to see decomposition happen.
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <Thermometer color={heat > 800 ? 'red' : 'white'} />
+                    <input
+                        type="range"
+                        min="20" max="1200"
+                        value={heat}
+                        onChange={(e) => setHeat(parseInt(e.target.value))}
+                        style={{ flex: 1, accentColor: heat > 800 ? 'red' : 'cyan' }}
+                    />
+                    <span style={{ width: '60px', textAlign: 'right', fontWeight: 'bold' }}>{heat}°C</span>
+                </div>
+
+                <h4 style={{ marginTop: '20px', marginBottom: '10px', color: 'var(--text-secondary)' }}>Reaction Progress</h4>
+                <div style={{ width: '100%', height: '10px', background: 'rgba(255,255,255,0.1)', borderRadius: '5px', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${decomposed}%`, background: 'var(--gradient-main)', transition: 'width 0.5s linear' }} />
+                </div>
+            </div>
+        </div>
+    );
+};
 
 // Main Lab Component
 export default function ChemicalLab() {
@@ -293,13 +465,13 @@ export default function ChemicalLab() {
         {
             title: "Combination Reactions", icon: <Zap size={18} />, reactions: [
                 { id: 1, name: "Hydrogen + Oxygen → Water", active: true, comp: <HydrogenOxygenReaction /> },
-                { id: 2, name: "Magnesium + Oxygen → MgO", active: false },
+                { id: 2, name: "Magnesium + Oxygen → MgO", active: true, comp: <MagnesiumCombustion /> },
                 { id: 3, name: "Calcium Oxide + Water", active: false }
             ]
         },
         {
             title: "Decomposition Reactions", icon: <BoxSelect size={18} />, reactions: [
-                { id: 4, name: "CaCO₃ → CaO + CO₂", active: false },
+                { id: 4, name: "CaCO₃ → CaO + CO₂", active: true, comp: <DecompositionReaction /> },
                 { id: 5, name: "Electrolysis of Water", active: false },
                 { id: 6, name: "Hydrogen Peroxide → Water + Oxygen", active: false }
             ]
