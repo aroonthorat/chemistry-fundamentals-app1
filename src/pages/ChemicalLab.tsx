@@ -298,23 +298,66 @@ export default function ChemicalLab() {
             ]
         },
         {
+            title: "Decomposition Reactions", icon: <BoxSelect size={18} />, reactions: [
+                { id: 4, name: "CaCO₃ → CaO + CO₂", active: false },
+                { id: 5, name: "Electrolysis of Water", active: false },
+                { id: 6, name: "Hydrogen Peroxide → Water + Oxygen", active: false }
+            ]
+        },
+        {
             title: "Single Displacement", icon: <ArrowLeft size={18} />, reactions: [
-                { id: 4, name: "Zinc + Copper Sulfate", active: true, comp: <DisplacementReaction /> },
-                { id: 5, name: "Iron + Copper Sulfate", active: false },
-                { id: 6, name: "Copper + Silver Nitrate", active: false }
+                { id: 7, name: "Zinc + Copper Sulfate", active: true, comp: <DisplacementReaction /> },
+                { id: 8, name: "Iron + Copper Sulfate", active: false },
+                { id: 9, name: "Copper + Silver Nitrate", active: false }
             ]
         },
         {
-            title: "Acid / Base (Titrations)", icon: <Beaker size={18} />, reactions: [
-                { id: 7, name: "HCl + NaOH (Neutralization)", active: true, comp: <TitrationLab /> },
-                { id: 8, name: "Acetic Acid + NaOH", active: false },
-                { id: 9, name: "Ammonia + HCl Gas", active: false }
+            title: "Double Displacement", icon: <Beaker size={18} />, reactions: [
+                { id: 10, name: "Silver Nitrate + NaCl", active: false },
+                { id: 11, name: "Barium Chloride + Na₂SO₄", active: false },
+                { id: 12, name: "Lead Nitrate + KI", active: false }
             ]
         },
         {
-            title: "Decomposition Features", icon: <BoxSelect size={18} />, reactions: [
-                { id: 10, name: "CaCO₃ → CaO + CO₂", active: false },
-                { id: 11, name: "Electrolysis of Water", active: false }
+            title: "Acid–Base Reactions", icon: <FlaskConical size={18} />, reactions: [
+                { id: 13, name: "HCl + NaOH (Neutralization)", active: true, comp: <TitrationLab /> },
+                { id: 14, name: "Acetic Acid + NaOH", active: false },
+                { id: 15, name: "Ammonia + HCl Gas", active: false }
+            ]
+        },
+        {
+            title: "Combustion Reactions", icon: <Zap size={18} />, reactions: [
+                { id: 16, name: "Methane Combustion", active: false },
+                { id: 17, name: "Ethanol Burning", active: false },
+                { id: 18, name: "Candle Combustion Zones", active: false }
+            ]
+        },
+        {
+            title: "Redox Reactions", icon: <Activity size={18} />, reactions: [
+                { id: 19, name: "Iron Rusting", active: false },
+                { id: 20, name: "Thermite Reaction", active: false },
+                { id: 21, name: "Copper Oxide + Hydrogen", active: false }
+            ]
+        },
+        {
+            title: "Gas Evolution", icon: <Filter size={18} />, reactions: [
+                { id: 22, name: "Zinc + HCl → H₂ Gas", active: false },
+                { id: 23, name: "Marble + HCl → CO₂", active: false },
+                { id: 24, name: "Ammonium Chloride + NaOH", active: false }
+            ]
+        },
+        {
+            title: "Endo/Exothermic", icon: <Thermometer size={18} />, reactions: [
+                { id: 25, name: "Ammonium Nitrate + Water", active: false },
+                { id: 26, name: "Calcium Chloride + Water", active: false }
+            ]
+        },
+        {
+            title: "Advanced Concepts", icon: <BoxSelect size={18} />, reactions: [
+                { id: 27, name: "SN1 vs SN2 Reaction", active: false },
+                { id: 28, name: "Esterification", active: false },
+                { id: 29, name: "Le Chatelier's Principle", active: false },
+                { id: 30, name: "Electrochemical Cell", active: false }
             ]
         }
     ];
