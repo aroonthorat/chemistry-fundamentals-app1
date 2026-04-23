@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
@@ -251,8 +252,11 @@ const ElementDetailModal: React.FC<ElementDetailModalProps> = ({ element, onClos
                   <Globe size={20} color="var(--accent-cyan)" /> Sources & Resources
                 </h4>
                 <div style={{ display: 'flex', gap: '15px' }}>
-                  <a href={element.source} target="_blank" rel="noreferrer" className="btn btn-secondary" style={{ padding: '12px 24px', fontSize: '0.9rem' }}>
-                    Wikipedia Article <ChevronRight size={16} />
+                  <Link to={`/element/${element.name.toLowerCase()}`} onClick={onClose} className="btn btn-secondary" style={{ padding: '12px 24px', fontSize: '0.9rem' }}>
+                    Read Element Profile <ChevronRight size={16} />
+                  </Link>
+                  <a href={element.source} target="_blank" rel="noreferrer" className="btn" style={{ padding: '12px 24px', fontSize: '0.9rem', opacity: 0.5, border: '1px solid rgba(255,255,255,0.1)' }}>
+                    Wikipedia <ChevronRight size={16} />
                   </a>
                 </div>
               </div>
