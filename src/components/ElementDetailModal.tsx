@@ -57,6 +57,24 @@ export const BohrModel: React.FC<{ element: Element; color: string }> = ({ eleme
             borderRadius: '50%',
             pointerEvents: 'none'
           }}>
+            {/* Shell Electron Count Badge */}
+            <div style={{
+              position: 'absolute',
+              bottom: -10,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              background: '#050505',
+              padding: '2px 8px',
+              borderRadius: '10px',
+              fontSize: '0.65rem',
+              color: color,
+              border: `1px solid ${color}55`,
+              fontWeight: 800,
+              zIndex: 5,
+              boxShadow: `0 2px 10px rgba(0,0,0,0.8)`
+            }}>
+              {electrons}e⁻
+            </div>
             {[...Array(electrons)].map((_, electronIdx) => {
               const angle = (electronIdx / electrons) * 360;
               return (
