@@ -21,6 +21,9 @@ const PremiumLayout = () => {
   const [metalColor, setMetalColor] = useState('#ffffff');
   const location = useLocation();
 
+  // Memoize the context object to prevent Outlet re-renders
+  const outletContext = useMemo(() => ({ setMetalIntensity, setMetalColor }), [setMetalIntensity, setMetalColor]);
+
   // Simulate Ad Playing
   useEffect(() => {
     if (showAd) {
@@ -179,7 +182,7 @@ const PremiumLayout = () => {
 
         {/* Content Area - Where the actual lab pages render */}
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}>
-          <Outlet context={useMemo(() => ({ setMetalIntensity, setMetalColor }), [setMetalIntensity, setMetalColor])} />
+          <Outlet context={outletContext} />
         </div>
       </div>
     </div>
