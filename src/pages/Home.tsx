@@ -57,6 +57,7 @@ function Home() {
             <Link to="/lab" className="text-gradient" style={{ fontWeight: 700 }}>3D Atomic Lab</Link>
             <Link to="/chemist-lab" className="text-gradient" style={{ fontWeight: 700 }}>Virtual Chem Lab</Link>
             <Link to="/periodic-table" className="text-gradient" style={{ fontWeight: 700 }}>Periodic Table</Link>
+            <Link to="/acid-reactions" className="text-gradient" style={{ fontWeight: 700 }}>Acid Reactions</Link>
             <a href="https://www.facebook.com/share/1E2hRqzqDW/" target="_blank" rel="noreferrer" className="btn btn-primary" style={{ padding: '8px 20px', fontSize: '0.9rem', color: 'white' }}>Join Page</a>
           </nav>
         </div>
@@ -71,11 +72,11 @@ function Home() {
           <h1>Master the Elements of <span className="text-gradient">Success</span></h1>
           <p>Your ultimate companion for dominating Organic, Inorganic, and Physical Chemistry. Join our community of thousands of students excelling in board exams and competitive tests.</p>
           <div className="hero-buttons">
-            <a href="#topics" className="btn btn-primary">
+            <Link to="/acid-reactions" className="btn btn-primary" style={{ background: 'var(--accent-cyan)', color: '#000', fontWeight: 'bold' }}>
+              Experience Acid Reactions <Sparkles size={20} style={{ marginLeft: '8px' }} />
+            </Link>
+            <a href="#topics" className="btn btn-secondary">
               Explore Topics <ArrowRight size={20} />
-            </a>
-            <a href="#community" className="btn btn-secondary">
-              View Updates
             </a>
           </div>
         </div>
