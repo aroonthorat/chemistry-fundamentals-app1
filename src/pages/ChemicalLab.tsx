@@ -554,6 +554,272 @@ const GenericMixReaction = ({ liquid1Name, liquid1Color, liquid2Name, liquid2Col
     );
 };
 
+// Reaction: Slaking of Lime (CaO + H2O)
+const SlakingOfLime = () => {
+    const [added, setAdded] = useState(false);
+    const [temp, setTemp] = useState(25);
+
+    useEffect(() => {
+        if (added && temp < 85) {
+            const timer = setInterval(() => setTemp(t => Math.min(t + 2, 85)), 100);
+            return () => clearInterval(timer);
+        }
+    }, [added, temp]);
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', alignItems: 'flex-end', height: '250px' }}>
+                <AnimatePresence>
+                    {!added && (
+                        <motion.div exit={{ y: 150, opacity: 0 }} transition={{ duration: 0.5 }} style={{ paddingBottom: '50px' }}>
+                            <div style={{ marginBottom: '10px', fontSize: '1.2rem', fontWeight: 'bold' }}>CaO (Quicklime)</div>
+                            <button onClick={() => setAdded(true)} style={{ width: '60px', height: '60px', background: '#f5f5f5', border: '2px solid #ddd', borderRadius: '8px', cursor: 'pointer' }} />
+                            <div style={{ marginTop: '10px', color: 'var(--accent-cyan)', fontSize: '0.9rem' }}>Click to add</div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '-40px', width: '100%', textAlign: 'center', fontWeight: 'bold' }}>
+                        {added ? 'Ca(OH)₂ (Slaked Lime)' : 'H₂O (Water)'}
+                    </div>
+                    <GlassBeaker color="rgba(255,255,255,0.1)" liquidHeight={60} />
+                    {added && temp > 40 && (
+                        <motion.div
+                            animate={{ opacity: [0.1, 0.3, 0.1], y: [-20, -60] }}
+                            transition={{ repeat: Infinity, duration: 2 } as any}
+                            style={{ position: 'absolute', top: '20%', left: '20%', right: '20%', height: '40px', background: 'rgba(255,255,255,0.2)', filter: 'blur(10px)', borderRadius: '50%' }}
+                        />
+                    )}
+                </div>
+                <div style={{ background: 'rgba(0,0,0,0.5)', padding: '15px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+                    <Thermometer color={temp > 60 ? 'red' : 'white'} />
+                    <div style={{ textAlign: 'left' }}>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Temperature</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: temp > 60 ? '#ff4444' : 'white' }}>{temp}°C</div>
+                    </div>
+                </div>
+            </div>
+            <div style={{ marginTop: '40px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <p style={{ marginTop: '15px', fontSize: '0.9rem' }}>
+                    <strong>CaO(s) + H₂O(l) → Ca(OH)₂(s) + Heat</strong><br />
+                    This is a highly exothermic combination reaction. Quicklime reacts vigorously with water to form slaked lime, releasing a large amount of heat!
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// Reaction: Decomposition of H2O2
+const PeroxideDecomposition = () => {
+    const [added, setAdded] = useState(false);
+    const [progress, setProgress] = useState(0);
+
+    useEffect(() => {
+        if (added && progress < 100) {
+            const timer = setInterval(() => setProgress(p => Math.min(p + 1, 100)), 200);
+            return () => clearInterval(timer);
+        }
+    }, [added, progress]);
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', alignItems: 'flex-end', height: '250px' }}>
+                <AnimatePresence>
+                    {!added && (
+                        <motion.div exit={{ y: 150, opacity: 0 }} transition={{ duration: 0.5 }} style={{ paddingBottom: '50px' }}>
+                            <div style={{ marginBottom: '10px', fontSize: '1.2rem', fontWeight: 'bold' }}>MnO₂ (Catalyst)</div>
+                            <button onClick={() => setAdded(true)} style={{ width: '40px', height: '40px', background: '#333', border: '1px solid #000', borderRadius: '4px', cursor: 'pointer' }} />
+                            <div style={{ marginTop: '10px', color: 'var(--accent-cyan)', fontSize: '0.9rem' }}>Click to add</div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '-40px', width: '100%', textAlign: 'center', fontWeight: 'bold' }}>H₂O₂ (aq)</div>
+                    <GlassBeaker color="rgba(255,255,255,0.1)" liquidHeight={50} />
+                    {added && progress < 100 && (
+                        <div style={{ position: 'absolute', bottom: '20px', left: '0', right: '0', pointerEvents: 'none' }}>
+                            {Array.from({ length: 8 }).map((_, i) => (
+                                <motion.div
+                                    key={i}
+                                    animate={{ y: [0, -100], opacity: [0, 1, 0], x: [Math.random() * 40 - 20, Math.random() * 40 - 20] }}
+                                    transition={{ repeat: Infinity, duration: 0.8, delay: Math.random() } as any}
+                                    style={{ position: 'absolute', left: '50%', width: '8px', height: '8px', borderRadius: '50%', background: 'rgba(255,255,255,0.6)' }}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+            <div style={{ marginTop: '40px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <p style={{ marginTop: '15px', fontSize: '0.9rem' }}>
+                    <strong>2H₂O₂(aq) → 2H₂O(l) + O₂(g)</strong><br />
+                    Manganese dioxide (MnO₂) acts as a catalyst to speed up the decomposition of hydrogen peroxide into water and oxygen gas.
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// Reaction: Iron Rusting (Redox)
+const IronRusting = () => {
+    const [days, setDays] = useState(0);
+
+    // Color transition: Grey (#8a8a8a) -> Rusty (#b7410e)
+    const rustIntensity = days / 30;
+    const nailColor = `rgb(${138 - (rustIntensity * 10)}, ${138 - (rustIntensity * 70)}, ${138 - (rustIntensity * 120)})`;
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                <div style={{ position: 'relative', padding: '40px', border: '4px solid rgba(255,255,255,0.2)', borderRadius: '20px', background: 'rgba(255,255,255,0.05)' }}>
+                    {/* Water Level */}
+                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%', background: 'rgba(0,150,255,0.1)', borderRadius: '0 0 16px 16px' }} />
+                    {/* The Nail */}
+                    <motion.div
+                        style={{ width: '10px', height: '120px', background: nailColor, borderRadius: '2px', position: 'relative', boxShadow: '0 0 10px rgba(0,0,0,0.5)' }}
+                    >
+                        {/* Nail Head */}
+                        <div style={{ position: 'absolute', top: '-5px', left: '-5px', width: '20px', height: '5px', background: nailColor, borderRadius: '2px' }} />
+                        {/* Rust Patches */}
+                        {days > 5 && Array.from({ length: Math.floor(days / 2) }).map((_, i) => (
+                            <div
+                                key={i}
+                                style={{
+                                    position: 'absolute',
+                                    top: `${Math.random() * 100}%`,
+                                    left: `${Math.random() * 8 - 4}px`,
+                                    width: '6px',
+                                    height: '6px',
+                                    background: '#b7410e',
+                                    borderRadius: '50%',
+                                    opacity: 0.6,
+                                    filter: 'blur(1px)'
+                                }}
+                            />
+                        ))}
+                    </motion.div>
+                </div>
+            </div>
+            <div style={{ marginTop: '40px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+                    <Activity color="var(--accent-cyan)" />
+                    <input type="range" min="0" max="30" value={days} onChange={(e) => setDays(parseInt(e.target.value))} style={{ flex: 1, accentColor: 'var(--accent-pink)' }} />
+                    <span style={{ width: '80px', textAlign: 'right', fontWeight: 'bold' }}>{days} Days</span>
+                </div>
+                <p style={{ fontSize: '0.9rem' }}>
+                    <strong>4Fe + 3O₂ + 6H₂O → 4Fe(OH)₃ (Rust)</strong><br />
+                    Rusting is a slow redox reaction where iron reacts with oxygen and moisture. The grey iron turns into reddish-brown hydrated iron(III) oxide.
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// Reaction: Candle Combustion Zones
+const CandleFlame = () => {
+    const [lit, setLit] = useState(false);
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ height: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', position: 'relative' }}>
+                {lit && (
+                    <div style={{ marginBottom: '10px', position: 'relative' }}>
+                        {/* Flame Zones */}
+                        {/* Outer Zone (Non-luminous) */}
+                        <motion.div
+                            animate={{ scale: [1, 1.05, 1], opacity: [0.7, 0.8, 0.7] }}
+                            transition={{ repeat: Infinity, duration: 0.5 } as any}
+                            style={{ width: '40px', height: '80px', background: 'rgba(0,100,255,0.3)', borderRadius: '50% 50% 20% 20%', filter: 'blur(4px)', position: 'absolute', bottom: 0, left: '-20px' }}
+                        />
+                        {/* Middle Zone (Luminous) */}
+                        <motion.div
+                            animate={{ scale: [1, 1.1, 1] }}
+                            transition={{ repeat: Infinity, duration: 0.4 } as any}
+                            style={{ width: '30px', height: '60px', background: 'linear-gradient(to top, #ffaa00, #ffff00)', borderRadius: '50% 50% 20% 20%', position: 'absolute', bottom: '5px', left: '-15px', zIndex: 2 }}
+                        />
+                        {/* Inner Zone (Dark) */}
+                        <div style={{ width: '12px', height: '25px', background: '#333', borderRadius: '50% 50% 20% 20%', position: 'absolute', bottom: '10px', left: '-6px', zIndex: 3, opacity: 0.8 }} />
+                    </div>
+                )}
+                {/* Candle Body */}
+                <div style={{ width: '40px', height: '120px', background: '#f5f5f5', borderRadius: '4px', border: '1px solid #ddd', position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '-10px', left: '19px', width: '2px', height: '10px', background: '#333' }} /> {/* Wick */}
+                </div>
+            </div>
+            <div style={{ marginTop: '30px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <button
+                    onClick={() => setLit(!lit)}
+                    style={{ width: '100%', padding: '15px', borderRadius: '10px', border: 'none', background: lit ? 'gray' : 'var(--accent-pink)', color: 'white', fontWeight: 'bold', cursor: 'pointer', marginBottom: '15px' }}
+                >
+                    {lit ? 'Extinguish Candle' : 'Light Candle'}
+                </button>
+                <div style={{ textAlign: 'left', fontSize: '0.85rem' }}>
+                    <p><strong>Zones of Candle Flame:</strong></p>
+                    <ul style={{ paddingLeft: '20px', marginTop: '5px' }}>
+                        <li style={{ color: 'var(--accent-cyan)' }}><strong>Outer Zone (Blue):</strong> Hottest part, complete combustion.</li>
+                        <li style={{ color: '#ffaa00' }}><strong>Middle Zone (Yellow):</strong> Moderately hot, partial combustion.</li>
+                        <li style={{ color: '#888' }}><strong>Inner Zone (Black):</strong> Least hot, contains unburnt wax vapors.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Reaction: Esterification
+const Esterification = () => {
+    const [temp, setTemp] = useState(25);
+    const [progress, setProgress] = useState(0);
+
+    useEffect(() => {
+        if (temp > 60 && progress < 100) {
+            const timer = setInterval(() => setProgress(p => Math.min(p + 1, 100)), 200);
+            return () => clearInterval(timer);
+        }
+    }, [temp, progress]);
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', alignItems: 'flex-end', height: '250px' }}>
+                <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '-40px', width: '100%', textAlign: 'center', fontWeight: 'bold' }}>Ethanol + Ethanoic Acid</div>
+                    <GlassBeaker color={progress > 50 ? 'rgba(255, 200, 255, 0.3)' : 'rgba(255,255,255,0.1)'} liquidHeight={50} />
+                    {temp > 60 && progress < 100 && (
+                        <motion.div
+                            animate={{ y: [0, -40], opacity: [0, 0.5, 0] }}
+                            transition={{ repeat: Infinity, duration: 1.5 } as any}
+                            style={{ position: 'absolute', top: '30%', left: '40%', right: '40%', height: '10px', background: 'rgba(255,255,255,0.2)', filter: 'blur(5px)' }}
+                        />
+                    )}
+                </div>
+                <div style={{ background: 'rgba(0,0,0,0.5)', padding: '15px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <Thermometer color={temp > 60 ? 'red' : 'white'} />
+                    <div style={{ textAlign: 'left' }}>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Water Bath</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{temp}°C</div>
+                    </div>
+                </div>
+            </div>
+            <div style={{ marginTop: '40px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+                    <span>Heat Control</span>
+                    <input type="range" min="25" max="80" value={temp} onChange={(e) => setTemp(parseInt(e.target.value))} style={{ flex: 1, accentColor: 'var(--accent-cyan)' }} />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', background: progress === 100 ? 'rgba(0,255,0,0.1)' : 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                    <Activity color={progress === 100 ? '#00ff00' : 'white'} />
+                    <span style={{ fontSize: '0.9rem' }}>
+                        {progress === 100 ? "🌸 Fruity Smell Detected! (Ethyl Acetate Formed)" : "Heating in progress... Reaction needs heat and H₂SO₄ catalyst."}
+                    </span>
+                </div>
+                <p style={{ marginTop: '15px', fontSize: '0.85rem' }}>
+                    <strong>CH₃COOH + C₂H₅OH → CH₃COOC₂H₅ + H₂O</strong><br />
+                    Acid-catalyzed reaction between a carboxylic acid and an alcohol to form a sweet-smelling Ester.
+                </p>
+            </div>
+        </div>
+    );
+};
+
 // Reaction: Electrolysis of Water
 const ElectrolysisLab = () => {
     const [voltage, setVoltage] = useState(0);
@@ -612,14 +878,14 @@ export default function ChemicalLab() {
             title: "Combination Reactions", icon: <Zap size={18} />, reactions: [
                 { id: 1, name: "Hydrogen + Oxygen → Water", active: true, comp: <HydrogenOxygenReaction /> },
                 { id: 2, name: "Magnesium + Oxygen → MgO", active: true, comp: <MagnesiumCombustion /> },
-                { id: 3, name: "Calcium Oxide + Water", active: false }
+                { id: 3, name: "Calcium Oxide + Water", active: true, comp: <SlakingOfLime /> }
             ]
         },
         {
             title: "Decomposition Reactions", icon: <BoxSelect size={18} />, reactions: [
                 { id: 4, name: "CaCO₃ → CaO + CO₂", active: true, comp: <DecompositionReaction /> },
                 { id: 5, name: "Electrolysis of Water", active: true, comp: <ElectrolysisLab /> },
-                { id: 6, name: "Hydrogen Peroxide → Water + Oxygen", active: false }
+                { id: 6, name: "Hydrogen Peroxide → Water + Oxygen", active: true, comp: <PeroxideDecomposition /> }
             ]
         },
         {
@@ -647,12 +913,12 @@ export default function ChemicalLab() {
             title: "Combustion Reactions", icon: <Zap size={18} />, reactions: [
                 { id: 16, name: "Methane Combustion", active: false },
                 { id: 17, name: "Ethanol Burning", active: false },
-                { id: 18, name: "Candle Combustion Zones", active: false }
+                { id: 18, name: "Candle Combustion Zones", active: true, comp: <CandleFlame /> }
             ]
         },
         {
             title: "Redox Reactions", icon: <Activity size={18} />, reactions: [
-                { id: 19, name: "Iron Rusting", active: false },
+                { id: 19, name: "Iron Rusting", active: true, comp: <IronRusting /> },
                 { id: 20, name: "Thermite Reaction", active: false },
                 { id: 21, name: "Copper Oxide + Hydrogen", active: false }
             ]
@@ -660,7 +926,7 @@ export default function ChemicalLab() {
         {
             title: "Gas Evolution", icon: <Filter size={18} />, reactions: [
                 { id: 22, name: "Zinc + HCl → H₂ Gas", active: true, comp: <GenericDropReaction solidName="Zn (Solid)" solidStartColor="#b0c4de" solidEndColor="#b0c4de" liquidStartColor="rgba(255,255,255,0.1)" liquidEndColor="rgba(255,255,255,0.1)" liquidStartName="HCl (aq)" liquidEndName="ZnCl₂ (aq)" equation="Zn + 2HCl → ZnCl₂ + H₂↑" description="Zinc metal dissolves in hydrochloric acid, producing rapid bubbling from Hydrogen gas!" hasBubbles={true} dissolveSolid={true} reactionSpeed={4} /> },
-                { id: 23, name: "Marble + HCl → CO₂", active: false },
+                { id: 23, name: "Marble + HCl → CO₂", active: true, comp: <GenericDropReaction solidName="Marble (CaCO₃)" solidStartColor="#e0e0e0" solidEndColor="#e0e0e0" liquidStartColor="rgba(255,255,255,0.1)" liquidEndColor="rgba(255,255,255,0.1)" liquidStartName="HCl (aq)" liquidEndName="CaCl₂ (aq)" equation="CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑" description="Marble chips react with hydrochloric acid to produce Calcium Chloride and Carbon Dioxide gas bubbles." hasBubbles={true} dissolveSolid={true} reactionSpeed={3} /> },
                 { id: 24, name: "Ammonium Chloride + NaOH", active: false }
             ]
         },
@@ -673,7 +939,7 @@ export default function ChemicalLab() {
         {
             title: "Advanced Concepts", icon: <BoxSelect size={18} />, reactions: [
                 { id: 27, name: "SN1 vs SN2 Reaction", active: false },
-                { id: 28, name: "Esterification", active: false },
+                { id: 28, name: "Esterification", active: true, comp: <Esterification /> },
                 { id: 29, name: "Le Chatelier's Principle", active: false },
                 { id: 30, name: "Electrochemical Cell", active: false }
             ]
