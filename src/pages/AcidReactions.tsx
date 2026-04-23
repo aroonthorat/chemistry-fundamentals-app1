@@ -28,12 +28,48 @@ const METALS = [
     icon: <Flame size={16} />
   },
   { 
+    id: 'li', 
+    name: 'Lithium (Li)', 
+    intensity: 0.7, 
+    color: '#ff3333',
+    desc: 'Vigorous reaction, fizzing and bubbling but usually does not ignite. Produces hydrogen gas steadily.',
+    danger: 'High',
+    icon: <Flame size={16} />
+  },
+  { 
+    id: 'ca', 
+    name: 'Calcium (Ca)', 
+    intensity: 0.6, 
+    color: '#ff9933',
+    desc: 'Reacts rapidly, producing hydrogen gas and forming a cloudy solution. Generates significant heat.',
+    danger: 'Medium-High',
+    icon: <Droplets size={16} />
+  },
+  { 
     id: 'mg', 
     name: 'Magnesium (Mg)', 
     intensity: 0.5, 
     color: '#ffffff',
     desc: 'Vigorous reaction. Rapid bubbling of Hydrogen gas, dissolving the metal quickly while getting very hot.',
     danger: 'Medium',
+    icon: <Droplets size={16} />
+  },
+  { 
+    id: 'zn', 
+    name: 'Zinc (Zn)', 
+    intensity: 0.4, 
+    color: '#a0b2c6',
+    desc: 'Moderate reaction. Bubbles steadily, producing hydrogen gas. Often used to prepare hydrogen in the lab.',
+    danger: 'Medium',
+    icon: <Droplets size={16} />
+  },
+  { 
+    id: 'fe', 
+    name: 'Iron (Fe)', 
+    intensity: 0.3, 
+    color: '#ff6600',
+    desc: 'Slow reaction with dilute acids. Gradually dissolves to form light green Iron(II) solutions and hydrogen gas.',
+    danger: 'Low',
     icon: <Droplets size={16} />
   },
   { 
@@ -44,6 +80,15 @@ const METALS = [
     desc: 'Mild or no reaction with standard acids. Reacts with Nitric acid to produce toxic brown NO2 gas and green/blue solution.',
     danger: 'Low (Toxic Gas)',
     icon: <Skull size={16} />
+  },
+  { 
+    id: 'ag', 
+    name: 'Silver (Ag)', 
+    intensity: 0.1, 
+    color: '#e0e0e0',
+    desc: 'No reaction with hydrochloric or dilute sulfuric acid. Reacts with nitric acid or hot concentrated sulfuric acid.',
+    danger: 'Low',
+    icon: <ShieldAlert size={16} />
   },
   { 
     id: 'au', 
