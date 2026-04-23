@@ -15,6 +15,8 @@ const fragmentShader = `
   uniform vec2 u_mouse;
   uniform vec2 u_resolution;
   uniform vec3 u_color;
+  uniform float u_metal_intensity;
+  uniform vec3 u_metal_color;
   
   varying vec2 vUv;
 
@@ -71,7 +73,11 @@ const fragmentShader = `
     
     // Create ripples/reaction based on distance to mouse
     float dist = distance(st, mouse);
-    float reaction = smoothstep(0.4, 0.0, dist) * 1.5; // Strong glow near mouse
+    
+    // Base reaction is slightly amplified by metal intensity
+    float baseRadius = 0.4 + (u_metal_intensity * 0.4);
+    float reactionMult = 1.5 + (u_metal_intensity * 8.0);
+    float reaction = smoothstep(baseRadius, 0.0, dist) * reactionMult;
     
     // Liquid distortion
     vec2 q = vec2(0.);
@@ -90,7 +96,10 @@ const fragmentShader = `
     color = mix(color, u_color * 2.0, clamp(length(r.x), 0.0, 1.0));
 
     // Apply mouse reaction (bright core + colored halo)
-    vec3 reactionColor = mix(u_color * 3.0, vec3(1.0), smoothstep(0.1, 0.0, dist));
+    vec3 baseReactionColor = u_color * 3.0;
+    vec3 finalReactionColor = mix(baseReactionColor, u_metal_color * 5.0, u_metal_intensity);
+    
+    vec3 reactionColor = mix(finalReactionColor, vec3(1.0), smoothstep(0.1 + (u_metal_intensity * 0.15), 0.0, dist));
     color += reactionColor * reaction;
 
     gl_FragColor = vec4((f * f * f + 0.6 * f * f + 0.5 * f) * color, 1.0);
@@ -99,9 +108,15 @@ const fragmentShader = `
 
 interface AcidicBackgroundProps {
   color: string; // Hex color
+  metalIntensity?: number; // 0 to 1
+  metalColor?: string; // Hex color
 }
 
-const AcidicBackground: React.FC<AcidicBackgroundProps> = ({ color }) => {
+const AcidicBackground: React.FC<AcidicBackgroundProps> = ({ 
+  color, 
+  metalIntensity = 0, 
+  metalColor = '#ffffff' 
+}) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const { size, viewport } = useThree();
@@ -112,16 +127,20 @@ const AcidicBackground: React.FC<AcidicBackgroundProps> = ({ color }) => {
       u_resolution: { value: new THREE.Vector2(size.width, size.height) },
       u_mouse: { value: new THREE.Vector2(0, 0) },
       u_color: { value: new THREE.Color(color) },
+      u_metal_intensity: { value: metalIntensity },
+      u_metal_color: { value: new THREE.Color(metalColor) },
     }),
-    [size, color]
+    [size] // Only re-create on size change
   );
 
-  // Update color uniform when prop changes
+  // Update uniforms when props change
   useMemo(() => {
     if (uniforms.u_color) {
       uniforms.u_color.value.set(color);
+      uniforms.u_metal_intensity.value = metalIntensity;
+      uniforms.u_metal_color.value.set(metalColor);
     }
-  }, [color, uniforms]);
+  }, [color, metalIntensity, metalColor, uniforms]);
 
   useFrame((state) => {
     if (materialRef.current) {

@@ -17,6 +17,8 @@ const PremiumLayout = () => {
   const [showAd, setShowAd] = useState(false);
   const [adProgress, setAdProgress] = useState(0);
   const [activeAcid, setActiveAcid] = useState(ACID_TYPES[0]);
+  const [metalIntensity, setMetalIntensity] = useState(0);
+  const [metalColor, setMetalColor] = useState('#ffffff');
   const location = useLocation();
 
   // Simulate Ad Playing
@@ -118,7 +120,11 @@ const PremiumLayout = () => {
       {/* 3D WebGL Background Layer */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
         <Canvas camera={{ position: [0, 0, 1] }}>
-          <AcidicBackground color={activeAcid.color} />
+          <AcidicBackground 
+            color={activeAcid.color} 
+            metalIntensity={metalIntensity} 
+            metalColor={metalColor} 
+          />
         </Canvas>
       </div>
 
@@ -136,7 +142,8 @@ const PremiumLayout = () => {
             
             <Link to="/lab" style={{ color: location.pathname === '/lab' ? activeAcid.color : '#ccc', textDecoration: 'none', fontWeight: 600 }}>Atomic Lab</Link>
             <Link to="/chemist-lab" style={{ color: location.pathname === '/chemist-lab' ? activeAcid.color : '#ccc', textDecoration: 'none', fontWeight: 600 }}>Chem Lab</Link>
-            <Link to="/periodic-table" style={{ color: location.pathname.startsWith('/periodic-table') || location.pathname.startsWith('/element/') ? activeAcid.color : '#ccc', textDecoration: 'none', fontWeight: 600 }}>Periodic Table</Link>
+            <Link to="/periodic-table" style={{ color: location.pathname.startsWith('/periodic-table') ? activeAcid.color : '#ccc', textDecoration: 'none', fontWeight: 600 }}>Periodic Table</Link>
+            <Link to="/acid-reactions" style={{ color: location.pathname === '/acid-reactions' ? activeAcid.color : '#ccc', textDecoration: 'none', fontWeight: 600 }}>Acid Reactions</Link>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
@@ -172,7 +179,7 @@ const PremiumLayout = () => {
 
         {/* Content Area - Where the actual lab pages render */}
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}>
-          <Outlet />
+          <Outlet context={{ setMetalIntensity, setMetalColor }} />
         </div>
       </div>
     </div>

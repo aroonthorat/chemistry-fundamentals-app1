@@ -4,6 +4,7 @@ import AtomicLab from './pages/AtomicLab';
 import ChemicalLab from './pages/ChemicalLab';
 import PeriodicTable from './pages/PeriodicTable';
 import ElementWiki from './pages/ElementWiki';
+import AcidReactions from './pages/AcidReactions';
 import PremiumLayout from './layouts/PremiumLayout';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/lab" element={<AtomicLab />} />
         <Route path="/chemist-lab" element={<ChemicalLab />} />
         <Route path="/periodic-table" element={<PeriodicTable />} />
+        <Route path="/acid-reactions" element={<AcidReactions />} />
       </Route>
     </Routes>
   );
