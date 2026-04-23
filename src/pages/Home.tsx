@@ -1,10 +1,17 @@
 import { useEffect } from 'react';
-import { Beaker, Atom, TestTube, ArrowRight, BookOpen, GraduationCap, Brain, Globe } from 'lucide-react';
+import { Beaker, Atom, TestTube, ArrowRight, BookOpen, GraduationCap, Brain, Globe, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ScrollCanvas from '../components/ScrollCanvas';
 import LiveFollowers from '../components/LiveFollowers';
+import InteractivePeriodicTable from '../components/InteractivePeriodicTable';
+import ElementDetailModal from '../components/ElementDetailModal';
+import { Element } from '../types/chemistry';
+import { useState } from 'react';
+
 
 function Home() {
+  const [selectedElement, setSelectedElement] = useState<Element | null>(null);
+
   // Load Facebook SDK
   useEffect(() => {
     // @ts-ignore
@@ -45,6 +52,7 @@ function Home() {
             <a href="#community">Community</a>
             <Link to="/lab" className="text-gradient" style={{ fontWeight: 700 }}>3D Atomic Lab</Link>
             <Link to="/chemist-lab" className="text-gradient" style={{ fontWeight: 700 }}>Virtual Chem Lab</Link>
+            <Link to="/periodic-table" className="text-gradient" style={{ fontWeight: 700 }}>Periodic Table</Link>
             <a href="https://www.facebook.com/share/1E2hRqzqDW/" target="_blank" rel="noreferrer" className="btn btn-primary" style={{ padding: '8px 20px', fontSize: '0.9rem', color: 'white' }}>Join Page</a>
           </nav>
         </div>
@@ -108,6 +116,46 @@ function Home() {
         </div>
       </section>
 
+      {/* Interactive Periodic Table Section */}
+      <section id="periodic-table" className="glass-panel" style={{ margin: '40px 24px', position: 'relative', zIndex: 10, overflow: 'hidden' }}>
+        <div className="container" style={{ padding: '80px 24px' }}>
+          <div className="section-header" style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <div className="hero-badge" style={{ margin: '0 auto 20px' }}>
+              <Sparkles style={{ width: '16px', height: '16px', marginRight: '8px' }} size={16} /> New Interactive Experience
+            </div>
+            <h2 className="section-title">Explore the <span className="text-gradient">Periodic Table</span></h2>
+            <p className="section-subtitle">Dive into the microscopic details of every known element. Interactive Bohr models, configurations, and properties—all in one high-tech interface.</p>
+          </div>
+
+          <div style={{ 
+            background: 'rgba(0,0,0,0.3)', 
+            borderRadius: '32px', 
+            padding: '40px',
+            border: '1px solid rgba(0, 240, 255, 0.1)',
+            boxShadow: '0 20px 80px rgba(0,0,0,0.5)'
+          }}>
+            <InteractivePeriodicTable 
+              compact={true} 
+              showFilters={false} 
+              onElementSelect={(el) => setSelectedElement(el)} 
+            />
+          </div>
+
+          <div style={{ marginTop: '40px', textAlign: 'center' }}>
+            <Link to="/periodic-table" className="btn btn-primary" style={{ display: 'inline-flex' }}>
+              Launch Full HD Table <ArrowRight size={20} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Element Detail Modal (Global) */}
+      <ElementDetailModal 
+        element={selectedElement} 
+        onClose={() => setSelectedElement(null)} 
+      />
+
+
       {/* Live Community Updates */}
       <section id="community" className="community-section">
         <div className="container community-grid">
@@ -170,6 +218,7 @@ function Home() {
               Chemistry Fundamentals
             </div>
             <div className="social-links">
+              <Link to="/periodic-table" title="Periodic Table"><Atom size={20} /></Link>
               <a href="https://www.facebook.com/share/1E2hRqzqDW/" target="_blank" rel="noreferrer"><Globe size={20} /></a>
               <a href="#topics"><BookOpen size={20} /></a>
               <a href="#about"><Brain size={20} /></a>
