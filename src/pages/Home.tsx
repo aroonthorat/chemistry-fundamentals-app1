@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { Beaker, Atom, TestTube, ArrowRight, BookOpen, GraduationCap, Brain, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import ScrollCanvas from '../components/ScrollCanvas';
+import LiveFollowers from '../components/LiveFollowers';
 
 function Home() {
   // Load Facebook SDK
@@ -67,6 +69,9 @@ function Home() {
         </div>
       </section>
 
+      {/* 3D Scroll Animation */}
+      <ScrollCanvas />
+
       {/* Branches of Chemistry */}
       <section id="topics" className="glass-panel" style={{ margin: '0 24px', position: 'relative', zIndex: 10 }}>
         <div className="container" style={{ padding: '80px 24px' }}>
@@ -112,8 +117,7 @@ function Home() {
 
             <div className="stats-grid">
               <div className="stat-item glass-panel">
-                <div className="stat-number">35k+</div>
-                <div className="stat-label">Active Followers</div>
+                <LiveFollowers />
               </div>
               <div className="stat-item glass-panel">
                 <div className="stat-number">Daily</div>
