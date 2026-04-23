@@ -119,7 +119,7 @@ const PremiumLayout = () => {
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: '#000' }}>
       {/* 3D WebGL Background Layer */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <Canvas camera={{ position: [0, 0, 1] }}>
+        <Canvas camera={{ position: [0, 0, 1] }} dpr={[1, 1.5]}>
           <AcidicBackground 
             color={activeAcid.color} 
             metalIntensity={metalIntensity} 
