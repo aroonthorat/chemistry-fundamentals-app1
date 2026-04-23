@@ -820,6 +820,424 @@ const Esterification = () => {
     );
 };
 
+// Reaction: Acetic Acid + NaOH
+const AceticAcidNaOH = () => {
+    const [naohDrops, setNaohDrops] = useState(0);
+    // Weak acid titration curve
+    let ph = 2.8; // Starting pH of 0.1M Acetic Acid
+    if (naohDrops < 20) ph = 2.8 + (naohDrops * 0.1);
+    else if (naohDrops < 50) ph = 4.8 + ((naohDrops - 20) * 0.05); // Buffer region
+    else if (naohDrops < 55) ph = 6 + ((naohDrops - 50) * 0.8); // Equivalence point
+    else ph = 10 + ((naohDrops - 55) * 0.1);
+
+    const isPink = ph > 8.2;
+    const liquidColor = isPink ? `rgba(255, 0, 127, ${Math.min(0.8, (ph - 8.2) * 0.2)})` : `rgba(255, 255, 255, 0.1)`;
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', height: '220px', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: 0, left: '20px', background: 'rgba(0,0,0,0.5)', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>pH</div>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{ph.toFixed(1)}</div>
+                </div>
+                <GlassBeaker color={liquidColor} liquidHeight={50 + (naohDrops * 0.5)} />
+            </div>
+            <div style={{ marginTop: '30px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <input type="range" min="0" max="100" value={naohDrops} onChange={(e) => setNaohDrops(parseInt(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent-pink)' }} />
+                <p style={{ marginTop: '10px', fontSize: '0.85rem' }}>
+                    <strong>CH₃COOH + NaOH → CH₃COONa + H₂O</strong><br />
+                    Weak Acid-Strong Base Titration. Note the buffer region where pH changes slowly.
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// Reaction: Ammonia + HCl Gas
+const AmmoniaHClGas = () => {
+    const [open, setOpen] = useState(false);
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ height: '250px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '50px' }}>
+                <div style={{ position: 'relative', width: '30px', height: '150px', border: '2px solid rgba(255,255,255,0.3)', borderRadius: '15px' }}>
+                    <div style={{ position: 'absolute', top: '-10px', left: '5px', width: '20px', height: '10px', background: '#555', borderRadius: '50%' }} />
+                    <div style={{ position: 'absolute', bottom: '10px', width: '100%', textAlign: 'center', fontSize: '0.7rem' }}>NH₃</div>
+                    {open && (
+                        <motion.div animate={{ x: [0, 50], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 2 } as any} style={{ position: 'absolute', top: '20%', right: '-20px', color: 'white', fontSize: '1.2rem' }}>💨</motion.div>
+                    )}
+                </div>
+                <div style={{ height: '100px', display: 'flex', alignItems: 'center' }}>
+                    {open && (
+                        <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1.5 }} style={{ width: '60px', height: '60px', background: 'rgba(255,255,255,0.8)', borderRadius: '50%', filter: 'blur(10px)' }} />
+                    )}
+                </div>
+                <div style={{ position: 'relative', width: '30px', height: '150px', border: '2px solid rgba(255,255,255,0.3)', borderRadius: '15px' }}>
+                    <div style={{ position: 'absolute', top: '-10px', left: '5px', width: '20px', height: '10px', background: '#555', borderRadius: '50%' }} />
+                    <div style={{ position: 'absolute', bottom: '10px', width: '100%', textAlign: 'center', fontSize: '0.7rem' }}>HCl</div>
+                    {open && (
+                        <motion.div animate={{ x: [0, -50], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 2 } as any} style={{ position: 'absolute', top: '20%', left: '-20px', color: 'white', fontSize: '1.2rem' }}>💨</motion.div>
+                    )}
+                </div>
+            </div>
+            <button onClick={() => setOpen(!open)} style={{ marginTop: '20px', padding: '12px 24px', borderRadius: '10px', border: 'none', background: 'var(--accent-cyan)', color: 'black', fontWeight: 'bold', cursor: 'pointer' }}>
+                {open ? 'Stop Reaction' : 'Open Gas Jars'}
+            </button>
+            <p style={{ marginTop: '20px', fontSize: '0.85rem' }}>
+                <strong>NH₃(g) + HCl(g) → NH₄Cl(s)</strong><br />
+                Two colorless gases react to form dense white fumes of solid Ammonium Chloride.
+            </p>
+        </div>
+    );
+};
+
+// Reaction: Methane Combustion
+const MethaneCombustion = () => {
+    const [gas, setGas] = useState(0);
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ height: '250px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end' }}>
+                <div style={{ width: '40px', height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }}>
+                    {gas > 0 && (
+                        <motion.div
+                            animate={{ height: `${gas * 1.5}px`, opacity: gas / 100 }}
+                            style={{ width: '30px', background: 'linear-gradient(to top, rgba(0,100,255,0.8), rgba(100,200,255,0.4), transparent)', borderRadius: '50% 50% 10% 10%', filter: 'blur(1px)' }}
+                        />
+                    )}
+                </div>
+                <div style={{ width: '20px', height: '60px', background: '#888', borderRadius: '2px' }} />
+                <div style={{ width: '50px', height: '10px', background: '#444', borderRadius: '5px' }} />
+            </div>
+            <div style={{ marginTop: '30px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <input type="range" min="0" max="100" value={gas} onChange={(e) => setGas(parseInt(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent-cyan)' }} />
+                <p style={{ marginTop: '10px', fontSize: '0.85rem' }}>
+                    <strong>CH₄ + 2O₂ → CO₂ + 2H₂O</strong><br />
+                    Methane burns with a blue flame. Adjust the gas flow to see the flame size change.
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// Reaction: Ethanol Burning
+const EthanolBurning = () => {
+    const [ignited, setIgnited] = useState(false);
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ position: 'relative', width: '100px', height: '20px', background: 'rgba(255,255,255,0.2)', borderRadius: '0 0 50px 50px', border: '2px solid rgba(255,255,255,0.3)' }}>
+                    {ignited && (
+                        <motion.div
+                            animate={{ y: [-10, -15, -10], opacity: [0.7, 0.9, 0.7] }}
+                            transition={{ repeat: Infinity, duration: 0.6 } as any}
+                            style={{ position: 'absolute', bottom: '10px', left: '10%', right: '10%', height: '80px', background: 'linear-gradient(to top, rgba(255,100,0,0.6), rgba(255,200,0,0.2), transparent)', borderRadius: '50% 50% 0 0', filter: 'blur(4px)' }}
+                        />
+                    )}
+                </div>
+            </div>
+            <button onClick={() => setIgnited(!ignited)} style={{ marginTop: '20px', padding: '12px 24px', borderRadius: '10px', border: 'none', background: ignited ? 'gray' : '#ff4400', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
+                {ignited ? 'Extinguish' : 'Ignite Ethanol'}
+            </button>
+            <p style={{ marginTop: '20px', fontSize: '0.85rem' }}>
+                <strong>C₂H₅OH + 3O₂ → 2CO₂ + 3H₂O</strong><br />
+                Ethanol burns with a slightly luminous flame compared to methane.
+            </p>
+        </div>
+    );
+};
+
+// Reaction: Thermite Reaction
+const ThermiteReaction = () => {
+    const [ignited, setIgnited] = useState(false);
+    const [complete, setComplete] = useState(false);
+
+    const handleIgnite = () => {
+        setIgnited(true);
+        setTimeout(() => {
+            setIgnited(false);
+            setComplete(true);
+        }, 2000);
+    };
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ height: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                <div style={{ position: 'relative', width: '80px', height: '100px', border: '4px solid #555', borderTop: 'none', borderRadius: '0 0 10px 10px', background: complete ? 'rgba(255,100,0,0.2)' : 'rgba(255,255,255,0.05)' }}>
+                    {ignited && (
+                        <div style={{ position: 'absolute', top: '-50px', left: '-10px', width: '100px', height: '100px' }}>
+                            {Array.from({ length: 20 }).map((_, i) => (
+                                <motion.div
+                                    key={i}
+                                    animate={{ x: [0, Math.random() * 200 - 100], y: [0, Math.random() * 200 - 100], opacity: [1, 0] }}
+                                    transition={{ repeat: Infinity, duration: 0.5 } as any}
+                                    style={{ position: 'absolute', left: '50%', top: '50%', width: '4px', height: '4px', background: '#fff', borderRadius: '50%', boxShadow: '0 0 10px #ffaa00' }}
+                                />
+                            ))}
+                        </div>
+                    )}
+                    <div style={{ position: 'absolute', bottom: '10px', left: '10px', right: '10px', height: '30px', background: complete ? '#555' : '#8b4513', borderRadius: '4px' }}>
+                        {complete && <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 1 } as any} style={{ width: '100%', height: '100%', background: 'radial-gradient(circle, #ff4400, transparent)', borderRadius: '4px' }} />}
+                    </div>
+                </div>
+            </div>
+            <button onClick={handleIgnite} disabled={ignited || complete} style={{ marginTop: '20px', padding: '12px 24px', borderRadius: '10px', border: 'none', background: ignited || complete ? 'gray' : '#ff4400', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
+                {complete ? 'Molten Iron Formed' : ignited ? 'REACTION VIGOROUS' : 'Ignite Thermite'}
+            </button>
+            <p style={{ marginTop: '20px', fontSize: '0.85rem' }}>
+                <strong>Fe₂O₃ + 2Al → 2Fe + Al₂O₃ + Heat</strong><br />
+                The thermite reaction is highly exothermic and produces molten iron.
+            </p>
+        </div>
+    );
+};
+
+// Reaction: Copper Oxide + Hydrogen
+const CopperOxideHydrogen = () => {
+    const [gas, setGas] = useState(false);
+    const [temp, setTemp] = useState(25);
+    const progress = (gas && temp > 300) ? 100 : 0;
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ height: '250px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div style={{ position: 'relative', width: '150px', height: '30px', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '15px' }}>
+                    <div style={{ position: 'absolute', left: '10px', right: '10px', top: '5px', bottom: '5px', background: progress === 100 ? '#b87333' : '#1a1a1a', borderRadius: '10px', transition: 'background 2s' }} />
+                    {gas && (
+                        <motion.div animate={{ x: [-20, 170], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 2 } as any} style={{ position: 'absolute', top: '50%', left: '-10px', color: 'white' }}>💨</motion.div>
+                    )}
+                </div>
+            </div>
+            <div style={{ marginTop: '20px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+                    <span>Temperature</span>
+                    <input type="range" min="25" max="500" value={temp} onChange={(e) => setTemp(parseInt(e.target.value))} style={{ flex: 1, accentColor: temp > 300 ? 'red' : 'cyan' }} />
+                    <span style={{ width: '60px' }}>{temp}°C</span>
+                </div>
+                <button onClick={() => setGas(!gas)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: 'none', background: gas ? 'var(--accent-pink)' : 'var(--accent-cyan)', color: 'black', fontWeight: 'bold', cursor: 'pointer' }}>
+                    {gas ? 'Stop H₂ Gas' : 'Flow H₂ Gas'}
+                </button>
+                <p style={{ marginTop: '15px', fontSize: '0.85rem' }}>
+                    <strong>CuO(s) + H₂(g) → Cu(s) + H₂O(g)</strong><br />
+                    Black Copper(II) oxide is reduced to reddish Copper metal by Hydrogen gas when heated.
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// Reaction: Ammonium Chloride + NaOH
+const AmmoniumChlorideNaOH = () => {
+    const [added, setAdded] = useState(false);
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ height: '220px', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', position: 'relative' }}>
+                <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '-40px', width: '100%', textAlign: 'center', fontWeight: 'bold' }}>NaOH (aq)</div>
+                    <GlassBeaker color="rgba(255,255,255,0.1)" liquidHeight={50} />
+                    {added && (
+                        <motion.div animate={{ y: [0, -100], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5 } as any} style={{ position: 'absolute', top: '20%', left: '50%', color: 'white', fontSize: '1.2rem' }}>💨</motion.div>
+                    )}
+                </div>
+                {!added && (
+                    <motion.div exit={{ y: 150, opacity: 0 }} style={{ marginLeft: '40px', paddingBottom: '50px' }}>
+                        <div style={{ marginBottom: '10px', fontSize: '0.8rem' }}>NH₄Cl (s)</div>
+                        <button onClick={() => setAdded(true)} style={{ width: '40px', height: '40px', background: 'white', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }} />
+                    </motion.div>
+                )}
+            </div>
+            <div style={{ marginTop: '40px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <p style={{ fontSize: '0.85rem' }}>
+                    <strong>NH₄Cl + NaOH → NaCl + H₂O + NH₃↑</strong><br />
+                    Evolution of Ammonia gas. Pungent smell!
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// Reaction: Ammonium Nitrate + Water
+const AmmoniumNitrateWater = () => {
+    const [added, setAdded] = useState(false);
+    const [temp, setTemp] = useState(25);
+
+    useEffect(() => {
+        if (added && temp > 5) {
+            const timer = setTimeout(() => setTemp(temp - 1), 100);
+            return () => clearTimeout(timer);
+        }
+    }, [added, temp]);
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', height: '220px', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: 0, left: '20px', background: 'rgba(0,0,0,0.5)', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Temp</div>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#00ffff' }}>{temp}°C</div>
+                </div>
+                <GlassBeaker color="rgba(0, 200, 255, 0.1)" liquidHeight={added ? 60 : 50} />
+            </div>
+            <button onClick={() => setAdded(true)} disabled={added} style={{ marginTop: '30px', padding: '12px 24px', borderRadius: '10px', border: 'none', background: added ? 'gray' : 'var(--accent-cyan)', color: 'black', fontWeight: 'bold', cursor: 'pointer' }}>
+                {added ? 'Dissolving...' : 'Add NH₄NO₃'}
+            </button>
+            <p style={{ marginTop: '20px', fontSize: '0.85rem' }}>
+                <strong>NH₄NO₃(s) + H₂O(l) → NH₄⁺(aq) + NO₃⁻(aq)</strong><br />
+                Endothermic Dissolution. Heat is absorbed from the surroundings.
+            </p>
+        </div>
+    );
+};
+
+// Reaction: Calcium Chloride + Water
+const CalciumChlorideWater = () => {
+    const [added, setAdded] = useState(false);
+    const [temp, setTemp] = useState(25);
+
+    useEffect(() => {
+        if (added && temp < 85) {
+            const timer = setTimeout(() => setTemp(temp + 2), 100);
+            return () => clearTimeout(timer);
+        }
+    }, [added, temp]);
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', height: '220px', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: 0, left: '20px', background: 'rgba(0,0,0,0.5)', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Temp</div>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#ff4400' }}>{temp}°C</div>
+                </div>
+                <GlassBeaker color="rgba(255, 50, 0, 0.1)" liquidHeight={added ? 60 : 50} />
+            </div>
+            <button onClick={() => setAdded(true)} disabled={added} style={{ marginTop: '30px', padding: '12px 24px', borderRadius: '10px', border: 'none', background: added ? 'gray' : 'var(--accent-pink)', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
+                {added ? 'Dissolving...' : 'Add CaCl₂'}
+            </button>
+            <p style={{ marginTop: '20px', fontSize: '0.85rem' }}>
+                <strong>CaCl₂(s) + H₂O(l) → Ca²⁺(aq) + 2Cl⁻(aq)</strong><br />
+                Exothermic Dissolution. Heat is released to the surroundings.
+            </p>
+        </div>
+    );
+};
+
+// Reaction: SN1 vs SN2 Comparison
+const SN1_SN2_Comparison = () => {
+    const [mode, setMode] = useState<'SN1' | 'SN2'>('SN1');
+    const [playing, setPlaying] = useState(false);
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '20px' }}>
+                <button onClick={() => setMode('SN1')} style={{ padding: '8px 16px', borderRadius: '5px', border: 'none', background: mode === 'SN1' ? 'var(--accent-cyan)' : 'rgba(255,255,255,0.1)', color: mode === 'SN1' ? 'black' : 'white', cursor: 'pointer' }}>SN1</button>
+                <button onClick={() => setMode('SN2')} style={{ padding: '8px 16px', borderRadius: '5px', border: 'none', background: mode === 'SN2' ? 'var(--accent-cyan)' : 'rgba(255,255,255,0.1)', color: mode === 'SN2' ? 'black' : 'white', cursor: 'pointer' }}>SN2</button>
+            </div>
+            <div style={{ height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+                {/* Central Carbon */}
+                <div id="carbon" style={{ width: '40px', height: '40px', background: '#444', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>C</div>
+                
+                {/* Nucleophile */}
+                <motion.div
+                    animate={playing ? (mode === 'SN1' ? { x: [100, 20], opacity: [0, 1] } : { x: [-100, -20], opacity: [0, 1] }) : { x: mode === 'SN1' ? 100 : -100, opacity: 0 }}
+                    transition={{ delay: mode === 'SN1' ? 1 : 0, duration: 1 } as any}
+                    style={{ position: 'absolute', width: '30px', height: '30px', background: 'var(--accent-cyan)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', fontSize: '0.7rem' }}>Nu⁻</motion.div>
+                
+                {/* Leaving Group */}
+                <motion.div
+                    animate={playing ? (mode === 'SN1' ? { x: [-20, -100], opacity: [1, 0] } : { x: [20, 100], opacity: [1, 0] }) : { x: mode === 'SN1' ? -20 : 20, opacity: 1 }}
+                    transition={{ duration: 1 } as any}
+                    style={{ position: 'absolute', width: '30px', height: '30px', background: 'var(--accent-pink)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '0.7rem' }}>L</motion.div>
+            </div>
+            <button onClick={() => { setPlaying(false); setTimeout(() => setPlaying(true), 100); }} style={{ marginTop: '20px', padding: '10px 20px', borderRadius: '8px', border: 'none', background: 'white', color: 'black', fontWeight: 'bold', cursor: 'pointer' }}>Play Animation</button>
+            <p style={{ marginTop: '20px', fontSize: '0.85rem' }}>
+                {mode === 'SN1' ? 'SN1: Two-step mechanism. Leaving group leaves first to form a carbocation.' : 'SN2: One-step mechanism. Backside attack occurs simultaneously with leaving group departure.'}
+            </p>
+        </div>
+    );
+};
+
+// Reaction: Le Chatelier's Principle
+const LeChatelierEquilibrium = () => {
+    const [temp, setTemp] = useState(25);
+    // 2NO2 (Brown) <=> N2O4 (Colorless) + Heat
+    // High temp favors reverse (more NO2 - Brown)
+    // Low temp favors forward (more N2O4 - Colorless)
+    const opacity = (temp - 0) / 100; // 0 to 1
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ height: '220px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div style={{ width: '60px', height: '180px', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '30px', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', inset: 0, background: `rgba(139, 69, 19, ${opacity})`, transition: 'background 0.5s' }} />
+                </div>
+            </div>
+            <div style={{ marginTop: '30px', background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '10px' }}>
+                    <span>Temp</span>
+                    <input type="range" min="0" max="100" value={temp} onChange={(e) => setTemp(parseInt(e.target.value))} style={{ flex: 1, accentColor: temp > 50 ? 'orange' : 'blue' }} />
+                    <span style={{ width: '40px' }}>{temp}°C</span>
+                </div>
+                <p style={{ fontSize: '0.85rem' }}>
+                    <strong>2NO₂(g) ⇌ N₂O₄(g) + Heat</strong><br />
+                    Cooling shifts equilibrium to the right (colorless). Heating shifts it left (brown).
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// Reaction: Electrochemical Cell
+const ElectrochemicalCell = () => {
+    const [connected, setConnected] = useState(false);
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ height: '250px', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '40px', position: 'relative' }}>
+                {/* Voltmeter */}
+                <div style={{ position: 'absolute', top: 0, background: '#222', border: '2px solid #555', padding: '5px 15px', borderRadius: '5px' }}>
+                    <div style={{ fontSize: '0.6rem' }}>Voltmeter</div>
+                    <div style={{ color: connected ? '#00ff00' : '#444', fontWeight: 'bold' }}>{connected ? '1.10 V' : '0.00 V'}</div>
+                </div>
+
+                {/* Left Beaker (Zn) */}
+                <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '-40px', left: '0', width: '20px', height: '100px', background: '#aaa', border: '1px solid #777' }} />
+                    <GlassBeaker color="rgba(200,200,255,0.1)" liquidHeight={60} />
+                    <div style={{ fontSize: '0.7rem', marginTop: '5px' }}>Zn Electrode</div>
+                </div>
+
+                {/* Salt Bridge */}
+                <div style={{ position: 'absolute', bottom: '60px', width: '120px', height: '15px', border: '2px solid rgba(255,255,255,0.3)', borderTop: 'none', borderRadius: '0 0 10px 10px' }} />
+
+                {/* Right Beaker (Cu) */}
+                <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '-40px', left: '0', width: '20px', height: '100px', background: '#b87333', border: '1px solid #8b4513' }} />
+                    <GlassBeaker color="rgba(0,100,255,0.2)" liquidHeight={60} />
+                    <div style={{ fontSize: '0.7rem', marginTop: '5px' }}>Cu Electrode</div>
+                </div>
+
+                {/* Wire */}
+                {connected && (
+                    <svg style={{ position: 'absolute', top: '-20px', width: '180px', height: '50px' }}>
+                        <motion.path
+                            d="M 40,30 L 90,0 L 140,30"
+                            fill="none"
+                            stroke="yellow"
+                            strokeWidth="2"
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: 1 }}
+                        />
+                        <motion.circle r="3" fill="yellow" animate={{ offsetDistance: ["0%", "100%"] }} transition={{ repeat: Infinity, duration: 1.5 } as any} style={{ offsetPath: "path('M 40,30 L 90,0 L 140,30')" }} />
+                    </svg>
+                )}
+            </div>
+            <button onClick={() => setConnected(!connected)} style={{ marginTop: '30px', padding: '12px 24px', borderRadius: '10px', border: 'none', background: connected ? 'gray' : 'var(--accent-cyan)', color: 'black', fontWeight: 'bold', cursor: 'pointer' }}>
+                {connected ? 'Disconnect' : 'Connect Circuit'}
+            </button>
+            <p style={{ marginTop: '20px', fontSize: '0.85rem' }}>
+                <strong>Zn(s) | Zn²⁺(aq) || Cu²⁺(aq) | Cu(s)</strong><br />
+                A Galvanic cell converting chemical energy into electrical energy.
+            </p>
+        </div>
+    );
+};
+
 // Reaction: Electrolysis of Water
 const ElectrolysisLab = () => {
     const [voltage, setVoltage] = useState(0);
@@ -905,43 +1323,43 @@ export default function ChemicalLab() {
         {
             title: "Acid–Base Reactions", icon: <FlaskConical size={18} />, reactions: [
                 { id: 13, name: "HCl + NaOH (Neutralization)", active: true, comp: <TitrationLab /> },
-                { id: 14, name: "Acetic Acid + NaOH", active: false },
-                { id: 15, name: "Ammonia + HCl Gas", active: false }
+                { id: 14, name: "Acetic Acid + NaOH", active: true, comp: <AceticAcidNaOH /> },
+                { id: 15, name: "Ammonia + HCl Gas", active: true, comp: <AmmoniaHClGas /> }
             ]
         },
         {
             title: "Combustion Reactions", icon: <Zap size={18} />, reactions: [
-                { id: 16, name: "Methane Combustion", active: false },
-                { id: 17, name: "Ethanol Burning", active: false },
+                { id: 16, name: "Methane Combustion", active: true, comp: <MethaneCombustion /> },
+                { id: 17, name: "Ethanol Burning", active: true, comp: <EthanolBurning /> },
                 { id: 18, name: "Candle Combustion Zones", active: true, comp: <CandleFlame /> }
             ]
         },
         {
             title: "Redox Reactions", icon: <Activity size={18} />, reactions: [
                 { id: 19, name: "Iron Rusting", active: true, comp: <IronRusting /> },
-                { id: 20, name: "Thermite Reaction", active: false },
-                { id: 21, name: "Copper Oxide + Hydrogen", active: false }
+                { id: 20, name: "Thermite Reaction", active: true, comp: <ThermiteReaction /> },
+                { id: 21, name: "Copper Oxide + Hydrogen", active: true, comp: <CopperOxideHydrogen /> }
             ]
         },
         {
             title: "Gas Evolution", icon: <Filter size={18} />, reactions: [
                 { id: 22, name: "Zinc + HCl → H₂ Gas", active: true, comp: <GenericDropReaction solidName="Zn (Solid)" solidStartColor="#b0c4de" solidEndColor="#b0c4de" liquidStartColor="rgba(255,255,255,0.1)" liquidEndColor="rgba(255,255,255,0.1)" liquidStartName="HCl (aq)" liquidEndName="ZnCl₂ (aq)" equation="Zn + 2HCl → ZnCl₂ + H₂↑" description="Zinc metal dissolves in hydrochloric acid, producing rapid bubbling from Hydrogen gas!" hasBubbles={true} dissolveSolid={true} reactionSpeed={4} /> },
                 { id: 23, name: "Marble + HCl → CO₂", active: true, comp: <GenericDropReaction solidName="Marble (CaCO₃)" solidStartColor="#e0e0e0" solidEndColor="#e0e0e0" liquidStartColor="rgba(255,255,255,0.1)" liquidEndColor="rgba(255,255,255,0.1)" liquidStartName="HCl (aq)" liquidEndName="CaCl₂ (aq)" equation="CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑" description="Marble chips react with hydrochloric acid to produce Calcium Chloride and Carbon Dioxide gas bubbles." hasBubbles={true} dissolveSolid={true} reactionSpeed={3} /> },
-                { id: 24, name: "Ammonium Chloride + NaOH", active: false }
+                { id: 24, name: "Ammonium Chloride + NaOH", active: true, comp: <AmmoniumChlorideNaOH /> }
             ]
         },
         {
             title: "Endo/Exothermic", icon: <Thermometer size={18} />, reactions: [
-                { id: 25, name: "Ammonium Nitrate + Water", active: false },
-                { id: 26, name: "Calcium Chloride + Water", active: false }
+                { id: 25, name: "Ammonium Nitrate + Water", active: true, comp: <AmmoniumNitrateWater /> },
+                { id: 26, name: "Calcium Chloride + Water", active: true, comp: <CalciumChlorideWater /> }
             ]
         },
         {
             title: "Advanced Concepts", icon: <BoxSelect size={18} />, reactions: [
-                { id: 27, name: "SN1 vs SN2 Reaction", active: false },
+                { id: 27, name: "SN1 vs SN2 Reaction", active: true, comp: <SN1_SN2_Comparison /> },
                 { id: 28, name: "Esterification", active: true, comp: <Esterification /> },
-                { id: 29, name: "Le Chatelier's Principle", active: false },
-                { id: 30, name: "Electrochemical Cell", active: false }
+                { id: 29, name: "Le Chatelier's Principle", active: true, comp: <LeChatelierEquilibrium /> },
+                { id: 30, name: "Electrochemical Cell", active: true, comp: <ElectrochemicalCell /> }
             ]
         }
     ];
