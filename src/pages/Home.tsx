@@ -5,7 +5,7 @@ import ScrollCanvas from '../components/ScrollCanvas';
 import LiveFollowers from '../components/LiveFollowers';
 import InteractivePeriodicTable from '../components/InteractivePeriodicTable';
 import ElementDetailModal from '../components/ElementDetailModal';
-import { Element } from '../types/chemistry';
+import type { Element } from '../types/chemistry';
 import { useState } from 'react';
 
 

@@ -2,9 +2,6 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
-  Scale, 
-  Box, 
-  Flame, 
   Globe, 
   User, 
   Calendar, 
@@ -12,10 +9,10 @@ import {
   Zap, 
   Activity, 
   ChevronRight, 
-  Thermometer,
-  Info
+  Thermometer
 } from 'lucide-react';
-import { Element, CATEGORIES } from '../types/chemistry';
+import { CATEGORIES } from '../types/chemistry';
+import type { Element } from '../types/chemistry';
 
 interface ElementDetailModalProps {
   element: Element | null;

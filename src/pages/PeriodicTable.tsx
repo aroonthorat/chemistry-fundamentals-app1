@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import InteractivePeriodicTable from '../components/InteractivePeriodicTable';
 import ElementDetailModal from '../components/ElementDetailModal';
-import { Element } from '../types/chemistry';
+import type { Element } from '../types/chemistry';
 
 const PeriodicTablePage: React.FC = () => {
   const [selectedElement, setSelectedElement] = useState<Element | null>(null);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Atom, Globe } from 'lucide-react';
+import { Atom } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const location = useLocation();

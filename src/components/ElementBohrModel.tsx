@@ -1,7 +1,6 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Stage, Float, PerspectiveCamera, Environment, Stars } from '@react-three/drei';
-import * as THREE from 'three';
 
 interface ModelProps {
   url: string;
@@ -85,7 +84,7 @@ const ElementBohrModel: React.FC<ElementBohrModelProps> = ({ elementName, modelU
             <Environment preset="city" />
             <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
             
-            <Stage environment="city" intensity={0.6} contactShadow={false}>
+            <Stage environment="city" intensity={0.6}>
               <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
                 {modelUrl ? (
                   <BohrModel url={modelUrl} />

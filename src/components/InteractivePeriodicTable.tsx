@@ -1,30 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { 
-  Beaker, 
-  Info, 
-  BarChart, 
-  ArrowLeft,
-  Sparkles,
-  X,
-  Globe,
-  Scale,
-  Fingerprint,
-  Flame,
-  GraduationCap,
-  Box,
-  Zap,
-  Activity,
-  Layers,
-  Thermometer,
-  Search,
-  ChevronRight,
-  User,
-  Calendar
+  Search
 } from 'lucide-react';
 import elementsData from '../data/elements.json';
 
-import { Element, CATEGORIES } from '../types/chemistry';
+import { CATEGORIES } from '../types/chemistry';
+import type { Element } from '../types/chemistry';
 
 
 const ElementCard: React.FC<{ 
