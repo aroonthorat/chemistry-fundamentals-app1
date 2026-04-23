@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Outlet, useLocation, Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Outlet, useLocation, Link } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
 import { Lock, FlaskConical, AlertTriangle, Skull, Play, ShieldCheck } from 'lucide-react';
 import AcidicBackground from '../components/AcidicBackground';
@@ -18,7 +18,6 @@ const PremiumLayout = () => {
   const [adProgress, setAdProgress] = useState(0);
   const [activeAcid, setActiveAcid] = useState(ACID_TYPES[0]);
   const location = useLocation();
-  const navigate = useNavigate();
 
   // Simulate Ad Playing
   useEffect(() => {
