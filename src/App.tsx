@@ -4,15 +4,18 @@ import AtomicLab from './pages/AtomicLab';
 import ChemicalLab from './pages/ChemicalLab';
 import PeriodicTable from './pages/PeriodicTable';
 import ElementWiki from './pages/ElementWiki';
+import PremiumLayout from './layouts/PremiumLayout';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/lab" element={<AtomicLab />} />
-      <Route path="/chemist-lab" element={<ChemicalLab />} />
-      <Route path="/periodic-table" element={<PeriodicTable />} />
       <Route path="/element/:id" element={<ElementWiki />} />
+      <Route element={<PremiumLayout />}>
+        <Route path="/lab" element={<AtomicLab />} />
+        <Route path="/chemist-lab" element={<ChemicalLab />} />
+        <Route path="/periodic-table" element={<PeriodicTable />} />
+      </Route>
     </Routes>
   );
 }

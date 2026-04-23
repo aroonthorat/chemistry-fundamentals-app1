@@ -7,7 +7,8 @@ import InteractivePeriodicTable from '../components/InteractivePeriodicTable';
 import ElementDetailModal from '../components/ElementDetailModal';
 import type { Element } from '../types/chemistry';
 import { useState } from 'react';
-
+import { Canvas } from '@react-three/fiber';
+import AcidicBackground from '../components/AcidicBackground';
 
 function Home() {
   const [selectedElement, setSelectedElement] = useState<Element | null>(null);
@@ -36,9 +37,12 @@ function Home() {
 
   return (
     <>
-      {/* Background Elements */}
-      <div className="orb orb-1"></div>
-      <div className="orb orb-2"></div>
+      {/* 3D WebGL Background Layer */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: -1, background: '#000' }}>
+        <Canvas camera={{ position: [0, 0, 1] }}>
+          <AcidicBackground color="#00ff88" />
+        </Canvas>
+      </div>
 
       {/* Navigation */}
       <header>
