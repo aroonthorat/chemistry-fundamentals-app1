@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -134,13 +134,15 @@ const AcidicBackground: React.FC<AcidicBackgroundProps> = ({
   );
 
   // Update uniforms when props change
-  useMemo(() => {
+  useEffect(() => {
     if (uniforms.u_color) {
       uniforms.u_color.value.set(color);
       uniforms.u_metal_intensity.value = metalIntensity;
       uniforms.u_metal_color.value.set(metalColor);
     }
   }, [color, metalIntensity, metalColor, uniforms]);
+
+  const targetMouse = useMemo(() => new THREE.Vector2(), []);
 
   useFrame((state) => {
     if (materialRef.current) {
@@ -149,7 +151,8 @@ const AcidicBackground: React.FC<AcidicBackgroundProps> = ({
       const pointerX = (state.pointer.x + 1) / 2 * size.width;
       const pointerY = (state.pointer.y + 1) / 2 * size.height;
       // Lerp mouse movement for smoother fluid reaction
-      materialRef.current.uniforms.u_mouse.value.lerp(new THREE.Vector2(pointerX, pointerY), 0.1);
+      targetMouse.set(pointerX, pointerY);
+      materialRef.current.uniforms.u_mouse.value.lerp(targetMouse, 0.1);
     }
   });
 

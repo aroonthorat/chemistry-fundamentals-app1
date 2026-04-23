@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Outlet, useLocation, Link } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
 import { Lock, FlaskConical, AlertTriangle, Skull, Play, ShieldCheck } from 'lucide-react';
@@ -179,7 +179,7 @@ const PremiumLayout = () => {
 
         {/* Content Area - Where the actual lab pages render */}
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}>
-          <Outlet context={{ setMetalIntensity, setMetalColor }} />
+          <Outlet context={useMemo(() => ({ setMetalIntensity, setMetalColor }), [setMetalIntensity, setMetalColor])} />
         </div>
       </div>
     </div>

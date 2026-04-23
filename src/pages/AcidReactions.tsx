@@ -109,13 +109,15 @@ const AcidReactions = () => {
   useEffect(() => {
     setMetalIntensity(activeMetal.intensity);
     setMetalColor(activeMetal.color);
+  }, [activeMetal, setMetalIntensity, setMetalColor]);
 
-    // Cleanup on unmount
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
       setMetalIntensity(0);
       setMetalColor('#ffffff');
     };
-  }, [activeMetal, setMetalIntensity, setMetalColor]);
+  }, [setMetalIntensity, setMetalColor]);
 
   return (
     <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', color: 'white', position: 'relative', zIndex: 10 }}>
