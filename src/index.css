@@ -91,6 +91,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 24px;
 }
 
 .logo {
@@ -109,15 +110,21 @@ header {
 
 .nav-links {
   display: flex;
-  gap: 32px;
+  gap: 22px;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-links a {
   color: var(--text-secondary);
   text-decoration: none;
   font-weight: 500;
+  font-size: 0.95rem;
+  line-height: 1.25;
   transition: color 0.3s ease;
   position: relative;
+  white-space: nowrap;
 }
 
 .nav-links a:hover {
@@ -253,6 +260,7 @@ header {
   transition: all 0.3s ease;
   border: none;
   font-family: inherit;
+  white-space: nowrap;
 }
 
 .btn-primary {
@@ -663,6 +671,15 @@ footer {
 
 /* Responsive */
 @media (max-width: 992px) {
+  .navbar {
+    gap: 16px;
+  }
+  .nav-links {
+    gap: 16px;
+  }
+  .nav-links a {
+    font-size: 0.88rem;
+  }
   .hero h1 {
     font-size: 3.5rem;
   }
