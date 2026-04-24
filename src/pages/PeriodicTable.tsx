@@ -11,13 +11,10 @@ const PeriodicTablePage: React.FC = () => {
 
   return (
     <div className="periodic-table-page" style={{ 
-      minHeight: '100vh', 
-      background: '#050505', 
       color: '#fff',
-      paddingTop: '100px',
+      paddingTop: '60px',
       paddingBottom: '100px',
       position: 'relative',
-      overflowX: 'hidden'
     }}>
       {/* Background Decor */}
       <div className="orb orb-1" style={{ opacity: 0.1, top: '10%', left: '5%', width: '500px', height: '500px' }}></div>

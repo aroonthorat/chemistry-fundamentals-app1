@@ -20,32 +20,30 @@ const fragmentShader = `
   
   varying vec2 vUv;
 
-  // Fast Value Noise (extremely performant, zero risk of WebGL freezing)
+  // Fast Value Noise (extremely performant)
   float hash(vec2 p) {
-    p = fract(p * vec2(5.3983, 5.4427));
-    p += dot(p.yx, p.xy + vec2(21.5351, 14.3137));
-    return fract(p.x * p.y * 95.4337);
+    return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
   }
 
   float noise(vec2 p) {
     vec2 i = floor(p);
     vec2 f = fract(p);
-    vec2 u = f * f * (3.0 - 2.0 * f);
-    return mix(mix(hash(i + vec2(0.0,0.0)), hash(i + vec2(1.0,0.0)), u.x),
-               mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x), u.y);
+    f = f * f * (3.0 - 2.0 * f);
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
   }
 
-  // Fractional Brownian Motion (Simplified for extreme performance)
+  // Simplified FBM for performance
   float fbm(vec2 x) {
     float v = 0.0;
     float a = 0.5;
-    vec2 shift = vec2(100.0);
-    mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
-    // 3 iterations with fast noise
+    mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);
     for (int i = 0; i < 3; ++i) {
-      // Map noise from [0, 1] to [-1, 1] for typical FBM behavior
-      v += a * (noise(x) * 2.0 - 1.0);
-      x = rot * x * 2.0 + shift;
+      v += a * noise(x);
+      x = rot * x * 2.0 + 100.0;
       a *= 0.5;
     }
     return v;
@@ -58,33 +56,29 @@ const fragmentShader = `
     // Mouse interaction
     vec2 mouse = u_mouse / u_resolution.xy;
     mouse.x *= u_resolution.x / u_resolution.y;
-    
-    // Create ripples/reaction based on distance to mouse
     float dist = distance(st, mouse);
     
-    // Base reaction is slightly amplified by metal intensity
-    float baseRadius = 0.4 + (u_metal_intensity * 0.4);
-    float reactionMult = 1.5 + (u_metal_intensity * 8.0);
+    // Reaction parameters
+    float baseRadius = 0.35 + (u_metal_intensity * 0.4);
+    float reactionMult = 1.2 + (u_metal_intensity * 7.0);
     float reaction = smoothstep(baseRadius, 0.0, dist) * reactionMult;
     
-    // Liquid distortion - Optimized to only 3 fbm calls total
-    vec2 q = vec2(fbm(st + u_time * 0.1), fbm(st + vec2(1.0)));
-    vec2 r = vec2(fbm(st + q + vec2(1.7, 9.2) + u_time * 0.15), fbm(st + q + vec2(8.3, 2.8) + u_time * 0.126));
+    // Liquid distortion - Simplified to 2 steps for better GPU performance
+    vec2 q = vec2(fbm(st + u_time * 0.05), fbm(st + 1.0));
+    vec2 r = vec2(fbm(st + q + u_time * 0.1), fbm(st + q + 0.5));
     float f = fbm(st + r);
 
     // Color mixing
-    vec3 color = mix(vec3(0.0, 0.0, 0.0), u_color, clamp(f * f * 4.0, 0.0, 1.0));
-    color = mix(color, vec3(1.0, 1.0, 1.0), clamp(length(q), 0.0, 1.0));
-    color = mix(color, u_color * 2.0, clamp(length(r.x), 0.0, 1.0));
+    vec3 color = mix(vec3(0.02), u_color, clamp(f * f * 3.5, 0.0, 1.0));
+    color = mix(color, vec3(0.9), clamp(length(q) * 0.4, 0.0, 1.0));
+    color = mix(color, u_color * 1.5, clamp(length(r.x) * 0.6, 0.0, 1.0));
 
-    // Apply mouse reaction (bright core + colored halo)
-    vec3 baseReactionColor = u_color * 3.0;
-    vec3 finalReactionColor = mix(baseReactionColor, u_metal_color * 5.0, u_metal_intensity);
-    
-    vec3 reactionColor = mix(finalReactionColor, vec3(1.0), smoothstep(0.1 + (u_metal_intensity * 0.15), 0.0, dist));
+    // Mouse reaction
+    vec3 reactionColor = mix(u_color * 2.5, u_metal_color * 4.0, u_metal_intensity);
+    reactionColor = mix(reactionColor, vec3(1.0), smoothstep(0.15, 0.0, dist));
     color += reactionColor * reaction;
 
-    gl_FragColor = vec4((f * f * f + 0.6 * f * f + 0.5 * f) * color, 1.0);
+    gl_FragColor = vec4(color * (f * 1.1 + 0.2), 1.0);
   }
 `;
 

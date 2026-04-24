@@ -76,13 +76,10 @@ const ElementWiki: React.FC = () => {
 
   return (
     <div style={{ 
-      minHeight: '100vh', 
-      background: '#050505', 
       color: '#fff',
-      paddingTop: '100px',
+      paddingTop: '60px',
       paddingBottom: '100px',
       position: 'relative',
-      overflowX: 'hidden'
     }}>
       {/* Dynamic Backgrounds */}
       <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '50vw', height: '50vw', background: `radial-gradient(circle, ${color}22 0%, transparent 70%)`, filter: 'blur(80px)', zIndex: 0 }} />
