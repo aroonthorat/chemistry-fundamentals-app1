@@ -50,6 +50,7 @@ const fragmentShader = `
   }
 
   void main() {
+    // Scaled resolution for performance
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
     st.x *= u_resolution.x / u_resolution.y;
 
@@ -59,26 +60,30 @@ const fragmentShader = `
     float dist = distance(st, mouse);
     
     // Reaction parameters
-    float baseRadius = 0.35 + (u_metal_intensity * 0.4);
-    float reactionMult = 1.2 + (u_metal_intensity * 7.0);
+    float baseRadius = 0.3 + (u_metal_intensity * 0.3);
+    float reactionMult = 1.0 + (u_metal_intensity * 6.0);
     float reaction = smoothstep(baseRadius, 0.0, dist) * reactionMult;
     
-    // Liquid distortion - Simplified to 2 steps for better GPU performance
-    vec2 q = vec2(fbm(st + u_time * 0.05), fbm(st + 1.0));
-    vec2 r = vec2(fbm(st + q + u_time * 0.1), fbm(st + q + 0.5));
-    float f = fbm(st + r);
+    // Optimized Fluid Simulation (Reducing FBM calls)
+    vec2 q = vec2(fbm(st + u_time * 0.04), fbm(st + vec2(1.0)));
+    vec2 r = vec2(fbm(st + q + u_time * 0.07), fbm(st + q + vec2(0.5)));
+    
+    // Single noise call instead of full FBM for the final detail
+    float f = noise(st + r * 2.0);
 
     // Color mixing
-    vec3 color = mix(vec3(0.02), u_color, clamp(f * f * 3.5, 0.0, 1.0));
-    color = mix(color, vec3(0.9), clamp(length(q) * 0.4, 0.0, 1.0));
-    color = mix(color, u_color * 1.5, clamp(length(r.x) * 0.6, 0.0, 1.0));
+    vec3 color = mix(vec3(0.015), u_color, clamp(f * 2.5, 0.0, 1.0));
+    color = mix(color, vec3(0.85), clamp(length(q) * 0.35, 0.0, 1.0));
+    color = mix(color, u_color * 1.4, clamp(length(r.x) * 0.5, 0.0, 1.0));
 
     // Mouse reaction
-    vec3 reactionColor = mix(u_color * 2.5, u_metal_color * 4.0, u_metal_intensity);
-    reactionColor = mix(reactionColor, vec3(1.0), smoothstep(0.15, 0.0, dist));
+    vec3 reactionColor = mix(u_color * 2.0, u_metal_color * 3.5, u_metal_intensity);
+    reactionColor = mix(reactionColor, vec3(1.0), smoothstep(0.12, 0.0, dist));
     color += reactionColor * reaction;
 
-    gl_FragColor = vec4(color * (f * 1.1 + 0.2), 1.0);
+    // Final vignette and glow
+    float vignette = 1.0 - smoothstep(1.5, 0.5, length(st - 0.5));
+    gl_FragColor = vec4(color * (f * 0.9 + 0.3) * (vignette * 0.5 + 0.5), 1.0);
   }
 `;
 
