@@ -112,7 +112,7 @@ export const BohrModel: React.FC<{ element: Element; color: string }> = ({ eleme
   );
 };
 
-const InfoItem: React.FC<{ icon: React.ReactNode, label: string, value: any, color: string }> = ({ icon, label, value, color }) => (
+const InfoItem: React.FC<{ icon: React.ReactNode, label: string, value: React.ReactNode, color: string }> = ({ icon, label, value, color }) => (
   <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
       <span style={{ color: color }}>{icon}</span>
@@ -163,16 +163,16 @@ const ElementDetailModal: React.FC<ElementDetailModalProps> = ({ element, onClos
             exit={{ opacity: 0, scale: 0.9, rotateX: 10 }}
             style={{
               width: '100%',
-              maxWidth: '1200px',
-              maxHeight: '90vh',
+              maxWidth: '1100px',
+              maxHeight: '85vh',
               background: '#040408',
               borderRadius: '40px',
-              border: `1px solid ${color}66`,
+              border: `1px solid ${color}44`,
               position: 'relative',
               overflow: 'hidden',
               display: 'grid',
-              gridTemplateColumns: 'minmax(400px, 1fr) 1.5fr',
-              boxShadow: `0 0 100px ${color}22`,
+              gridTemplateColumns: '400px 1fr',
+              boxShadow: `0 0 80px ${color}15`,
               zIndex: 9001
             }}
           >
@@ -180,10 +180,10 @@ const ElementDetailModal: React.FC<ElementDetailModalProps> = ({ element, onClos
               onClick={onClose}
               style={{
                 position: 'absolute',
-                top: '25px',
-                right: '25px',
-                width: '44px',
-                height: '44px',
+                top: '20px',
+                right: '20px',
+                width: '40px',
+                height: '40px',
                 borderRadius: '50%',
                 background: 'rgba(255,255,255,0.05)',
                 border: '1px solid rgba(255,255,255,0.1)',
@@ -196,87 +196,167 @@ const ElementDetailModal: React.FC<ElementDetailModalProps> = ({ element, onClos
                 transition: 'all 0.3s'
               }}
             >
-              <X size={24} />
+              <X size={20} />
             </button>
 
-            {/* Left Column: Visuals */}
+            {/* Left Column: Core Identity */}
             <div style={{ 
-              background: `linear-gradient(180deg, ${color}15, transparent)`,
-              padding: '50px',
+              background: `linear-gradient(180deg, ${color}10, transparent)`,
+              padding: '40px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               borderRight: '1px solid rgba(255,255,255,0.05)',
-              overflowY: 'auto'
+              overflowY: 'auto',
+              scrollbarWidth: 'none'
             }}>
-              <div style={{ marginBottom: '50px', position: 'relative' }}>
+              <div style={{ marginBottom: '30px', position: 'relative', transform: 'scale(0.85)' }}>
                  <BohrModel element={element} color={color} />
               </div>
 
-              <div style={{ textAlign: 'center', zIndex: 1 }}>
-                <h2 style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '8px', letterSpacing: '-2px' }}>{element.name}</h2>
-                <span style={{ 
-                  fontSize: '1rem', 
+              <div style={{ textAlign: 'center', zIndex: 1, width: '100%' }}>
+                <h2 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '4px', letterSpacing: '-2px', color: '#fff' }}>{element.name}</h2>
+                <div style={{ 
+                  fontSize: '0.8rem', 
                   color: color,
                   fontWeight: 800,
                   textTransform: 'uppercase',
-                  letterSpacing: '3px',
-                  background: 'rgba(255,255,255,0.05)',
-                  padding: '6px 20px',
+                  letterSpacing: '2px',
+                  background: `${color}15`,
+                  padding: '4px 16px',
                   borderRadius: '100px',
-                  border: `1px solid ${color}33`
-                }}>{element.category}</span>
+                  border: `1px solid ${color}33`,
+                  display: 'inline-block',
+                  marginBottom: '30px'
+                }}>{element.category}</div>
               </div>
 
-              <div style={{ marginTop: '50px', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                <div className="glass-card" style={{ padding: '25px', textAlign: 'center' }}>
-                  <span style={{ color: '#666', fontSize: '0.75rem', display: 'block', textTransform: 'uppercase', fontWeight: 800, marginBottom: '8px' }}>Atomic Number</span>
-                  <span style={{ fontSize: '2.5rem', fontWeight: 900, color: color }}>{element.number}</span>
+              <div style={{ width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <div style={{ 
+                  background: 'rgba(255,255,255,0.03)', 
+                  padding: '20px', 
+                  borderRadius: '24px', 
+                  textAlign: 'center',
+                  border: '1px solid rgba(255,255,255,0.05)'
+                }}>
+                  <span style={{ color: '#666', fontSize: '0.65rem', display: 'block', textTransform: 'uppercase', fontWeight: 800, marginBottom: '4px' }}>Number</span>
+                  <span style={{ fontSize: '2rem', fontWeight: 900, color: color }}>{element.number}</span>
                 </div>
-                <div className="glass-card" style={{ padding: '25px', textAlign: 'center' }}>
-                  <span style={{ color: '#666', fontSize: '0.75rem', display: 'block', textTransform: 'uppercase', fontWeight: 800, marginBottom: '8px' }}>Atomic Mass</span>
-                  <span style={{ fontSize: '1.8rem', fontWeight: 800 }}>{element.atomic_mass.toFixed(4)}</span>
+                <div style={{ 
+                  background: 'rgba(255,255,255,0.03)', 
+                  padding: '20px', 
+                  borderRadius: '24px', 
+                  textAlign: 'center',
+                  border: '1px solid rgba(255,255,255,0.05)'
+                }}>
+                  <span style={{ color: '#666', fontSize: '0.65rem', display: 'block', textTransform: 'uppercase', fontWeight: 800, marginBottom: '4px' }}>Mass</span>
+                  <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff' }}>{element.atomic_mass.toFixed(2)}</span>
                 </div>
               </div>
 
               {element.image && (
-                <div style={{ marginTop: '40px', width: '100%', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <img src={element.image.url} alt={element.name} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
-                  <div style={{ padding: '12px', background: 'rgba(0,0,0,0.5)', fontSize: '0.7rem', color: '#888' }}>
+                <div style={{ marginTop: '30px', width: '100%', borderRadius: '20px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', position: 'relative' }}>
+                  <img src={element.image.url} alt={element.name} style={{ width: '100%', height: '160px', objectFit: 'cover' }} />
+                  <div style={{ 
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    padding: '8px 12px', 
+                    background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', 
+                    fontSize: '0.6rem', 
+                    color: '#aaa',
+                    fontWeight: 500
+                  }}>
                     {element.image.title}
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Right Column: Information */}
-            <div style={{ padding: '50px', overflowY: 'auto' }}>
-              <div style={{ marginBottom: '40px' }}>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '15px', color: 'var(--accent-cyan)' }}>Overview</h3>
-                <p style={{ fontSize: '1.1rem', color: '#ccc', lineHeight: 1.8 }}>{element.summary}</p>
+            {/* Right Column: Detailed Insights */}
+            <div style={{ padding: '40px', overflowY: 'auto', background: '#05050a' }}>
+              <section style={{ marginBottom: '40px' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '12px', color: color, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Activity size={18} /> Overview
+                </h3>
+                <p style={{ fontSize: '1rem', color: '#aaa', lineHeight: 1.7, fontWeight: 400 }}>{element.summary}</p>
+              </section>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '35px' }}>
+                {/* Atomic & Chemical Section */}
+                <section>
+                  <h4 style={{ fontSize: '0.8rem', color: '#555', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 800, marginBottom: '15px' }}>Atomic & Chemical</h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px' }}>
+                    <InfoItem icon={<Layers size={16} />} label="Configuration" value={element.electron_configuration} color={color} />
+                    <InfoItem icon={<Zap size={16} />} label="Electronegativity" value={element.electronegativity_pauling || 'N/A'} color={color} />
+                    <InfoItem icon={<User size={16} />} label="Discovered By" value={element.discovered_by || 'Unknown'} color={color} />
+                    <InfoItem icon={<Calendar size={16} />} label="Phase" value={element.phase} color={color} />
+                  </div>
+                </section>
+
+                {/* Thermal Properties Section */}
+                <section>
+                  <h4 style={{ fontSize: '0.8rem', color: '#555', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 800, marginBottom: '15px' }}>Thermal Properties</h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px' }}>
+                    <InfoItem icon={<Thermometer size={16} />} label="Melting Point" value={element.melt ? `${element.melt} K` : 'N/A'} color={color} />
+                    <InfoItem icon={<Activity size={16} />} label="Boiling Point" value={element.boil ? `${element.boil} K` : 'N/A'} color={color} />
+                  </div>
+                </section>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '40px' }}>
-                 <InfoItem icon={<User size={18} />} label="Discovered By" value={element.discovered_by || 'Unknown'} color={color} />
-                 <InfoItem icon={<Calendar size={18} />} label="Phase" value={element.phase} color={color} />
-                 <InfoItem icon={<Layers size={18} />} label="Electron Config" value={element.electron_configuration} color={color} />
-                 <InfoItem icon={<Zap size={18} />} label="Electronegativity" value={element.electronegativity_pauling || 'N/A'} color={color} />
-                 <InfoItem icon={<Thermometer size={18} />} label="Melting Point" value={element.melt ? `${element.melt} K` : 'N/A'} color={color} />
-                 <InfoItem icon={<Activity size={18} />} label="Boiling Point" value={element.boil ? `${element.boil} K` : 'N/A'} color={color} />
-              </div>
-
-              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '30px', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <h4 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Globe size={20} color="var(--accent-cyan)" /> Sources & Resources
-                </h4>
-                <div style={{ display: 'flex', gap: '15px' }}>
-                  <Link to={`/element/${element.name.toLowerCase()}`} onClick={onClose} className="btn btn-secondary" style={{ padding: '12px 24px', fontSize: '0.9rem' }}>
-                    Read Element Profile <ChevronRight size={16} />
+              {/* Action Bar */}
+              <div style={{ 
+                marginTop: '40px',
+                paddingTop: '30px',
+                borderTop: '1px solid rgba(255,255,255,0.05)',
+                display: 'flex', 
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <Link 
+                    to={`/element/${element.name.toLowerCase()}`} 
+                    onClick={onClose} 
+                    style={{ 
+                      background: color,
+                      color: '#000',
+                      padding: '12px 24px', 
+                      borderRadius: '14px',
+                      textDecoration: 'none',
+                      fontSize: '0.9rem',
+                      fontWeight: 800,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      transition: 'transform 0.2s'
+                    }}
+                  >
+                    View Wiki <ChevronRight size={16} />
                   </Link>
-                  <a href={element.source} target="_blank" rel="noreferrer" className="btn" style={{ padding: '12px 24px', fontSize: '0.9rem', opacity: 0.5, border: '1px solid rgba(255,255,255,0.1)' }}>
-                    Wikipedia <ChevronRight size={16} />
+                  <a 
+                    href={element.source} 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    style={{ 
+                      background: 'rgba(255,255,255,0.05)',
+                      color: '#fff',
+                      padding: '12px 20px', 
+                      borderRadius: '14px',
+                      textDecoration: 'none',
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    Source <Globe size={14} />
                   </a>
                 </div>
+                
+                <span style={{ fontSize: '0.7rem', color: '#444', fontWeight: 600 }}>ID: {element.symbol}-{element.number}</span>
               </div>
             </div>
           </motion.div>

@@ -8,6 +8,13 @@ import elementsData from '../data/elements.json';
 import { CATEGORIES } from '../types/chemistry';
 import type { Element } from '../types/chemistry';
 
+type TrendType = 'none' | 'mass' | 'electronegativity' | 'density';
+
+const TREND_OPTIONS: Array<{ id: TrendType; label: string }> = [
+  { id: 'none', label: 'Classic' },
+  { id: 'mass', label: 'Mass' },
+  { id: 'electronegativity', label: 'Electro' },
+];
 
 const ElementCard: React.FC<{ 
   element: Element; 
@@ -263,7 +270,7 @@ const InteractivePeriodicTable: React.FC<InteractivePeriodicTableProps> = ({
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [currentTrend, setCurrentTrend] = useState<'none' | 'mass' | 'electronegativity' | 'density'>('none');
+  const [currentTrend, setCurrentTrend] = useState<TrendType>('none');
   const containerRef = useRef<HTMLDivElement>(null);
 
   const elements = elementsData.elements as Element[];
@@ -292,88 +299,71 @@ const InteractivePeriodicTable: React.FC<InteractivePeriodicTableProps> = ({
   };
 
   return (
-    <div className="interactive-periodic-table" style={{ position: 'relative', width: '100%' }}>
+    <div className="interactive-periodic-table relative w-full">
       {showFilters && (
-        <div style={{ 
-          marginBottom: '30px', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          gap: '20px',
-          background: 'rgba(255,255,255,0.03)',
-          padding: '24px',
-          borderRadius: '24px',
-          border: '1px solid rgba(255,255,255,0.05)'
-        }}>
-          <div style={{ position: 'relative', maxWidth: '400px' }}>
-            <Search style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#555' }} size={18} />
-            <input 
-              type="text" 
-              placeholder="Search elements..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '12px',
-                padding: '12px 12px 12px 40px',
-                color: '#fff',
-                fontSize: '0.95rem',
-                outline: 'none'
-              }}
-            />
+        <div className="mb-10 flex flex-col gap-6 bg-white/5 backdrop-blur-xl p-6 sm:p-8 rounded-[2rem] border border-white/10 shadow-2xl">
+          <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
+            <div className="relative w-full lg:max-w-md group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-accent-cyan transition-colors" size={20} />
+              <input 
+                type="text" 
+                placeholder="Search elements by name, symbol, or number..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-accent-cyan/50 focus:bg-white/10 transition-all text-base sm:text-lg"
+              />
+            </div>
+
+            <div className="flex items-center gap-3 bg-black/20 p-1.5 rounded-2xl border border-white/5">
+               <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-3 mr-1">View Trends</span>
+               <div className="flex gap-1">
+                  {TREND_OPTIONS.map((trend) => (
+                    <button
+                      key={trend.id}
+                      onClick={() => setCurrentTrend(trend.id)}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 ${
+                        currentTrend === trend.id 
+                          ? 'bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30 shadow-[0_0_15px_rgba(0,240,255,0.1)]' 
+                          : 'text-white/40 hover:text-white/70 hover:bg-white/5 border border-transparent'
+                      }`}
+                    >
+                      {trend.label}
+                    </button>
+                  ))}
+               </div>
+            </div>
           </div>
           
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {CATEGORIES.map(cat => (
+          <div className="w-full overflow-x-auto no-scrollbar py-2 -mx-2 px-2">
+            <div className="flex flex-wrap sm:flex-nowrap lg:flex-wrap gap-2 min-w-max sm:min-w-0">
               <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: '100px',
-                  border: '1px solid',
-                  borderColor: selectedCategory === cat.id ? cat.color : 'rgba(255,255,255,0.1)',
-                  background: selectedCategory === cat.id ? `${cat.color}22` : 'transparent',
-                  color: selectedCategory === cat.id ? cat.color : '#888',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
+                onClick={() => setSelectedCategory('all')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border ${
+                  selectedCategory === 'all'
+                    ? 'bg-white/10 text-white border-white/20 shadow-lg'
+                    : 'bg-transparent text-white/40 border-white/5 hover:border-white/20 hover:text-white'
+                }`}
               >
-                {cat.name}
+                All Elements
               </button>
-            ))}
-          </div>
-
-          <div style={{ display: 'flex', gap: '15px', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-             <span style={{ fontSize: '0.75rem', color: '#666', fontWeight: 700 }}>TRENDS:</span>
-             <div style={{ display: 'flex', gap: '8px' }}>
-                {[
-                  { id: 'none', label: 'Default' },
-                  { id: 'mass', label: 'Mass' },
-                  { id: 'electronegativity', label: 'Electronegativity' }
-                ].map(trend => (
-                  <button
-                    key={trend.id}
-                    onClick={() => setCurrentTrend(trend.id as any)}
-                    style={{
-                      padding: '4px 12px',
-                      borderRadius: '8px',
-                      background: currentTrend === trend.id ? 'rgba(0, 240, 255, 0.1)' : 'rgba(255,255,255,0.02)',
-                      border: '1px solid',
-                      borderColor: currentTrend === trend.id ? 'rgba(0, 240, 255, 0.2)' : 'rgba(255,255,255,0.05)',
-                      color: currentTrend === trend.id ? 'var(--accent-cyan)' : '#777',
-                      cursor: 'pointer',
-                      fontSize: '0.75rem',
-                      fontWeight: 600
-                    }}
-                  >
-                    {trend.label}
-                  </button>
-                ))}
-             </div>
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border whitespace-nowrap ${
+                    selectedCategory === cat.id 
+                      ? 'bg-white/10 text-white shadow-lg' 
+                      : 'bg-transparent text-white/40 border-white/5 hover:border-white/20 hover:text-white'
+                  }`}
+                  style={{ 
+                    borderColor: selectedCategory === cat.id ? cat.color : undefined,
+                    color: selectedCategory === cat.id ? cat.color : undefined
+                  }}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}

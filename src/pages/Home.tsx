@@ -10,28 +10,34 @@ import { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import AcidicBackground from '../components/AcidicBackground';
 
+declare global {
+  interface Window {
+    fbAsyncInit?: () => void;
+    FB?: {
+      init: (config: { xfbml: boolean; version: string }) => void;
+    };
+  }
+}
+
 function Home() {
   const [selectedElement, setSelectedElement] = useState<Element | null>(null);
 
   // Load Facebook SDK
   useEffect(() => {
-    // @ts-ignore
     window.fbAsyncInit = function () {
-      // @ts-ignore
-      FB.init({
+      window.FB?.init({
         xfbml: true,
         version: 'v18.0'
       });
     };
 
     (function (d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
+      const fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      // @ts-ignore
+      const js = d.createElement(s) as HTMLScriptElement;
+      js.id = id;
       js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
-      // @ts-ignore
-      fjs.parentNode.insertBefore(js, fjs);
+      fjs?.parentNode?.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
   }, []);
 
@@ -96,7 +102,7 @@ function Home() {
           <div className="features-grid">
             <Link to="/discipline/physical" className="feature-card glass-panel block hover:-translate-y-2 transition-transform duration-300" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon-wrapper">
-                <Beaker size={32} />
+                <Beaker size={48} />
               </div>
               <h3>Physical Chemistry</h3>
               <p>Master thermodynamics, kinetics, and quantum chemistry with clear mathematical foundations and intuitive problem-solving strategies.</p>
@@ -104,7 +110,7 @@ function Home() {
 
             <Link to="/discipline/organic" className="feature-card glass-panel block hover:-translate-y-2 transition-transform duration-300" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon-wrapper">
-                <TestTube size={32} />
+                <TestTube size={48} />
               </div>
               <h3>Organic Chemistry</h3>
               <p>Demystify reaction mechanisms, stereochemistry, and synthesis. Learn to think logically rather than memorizing infinite reactions.</p>
@@ -112,7 +118,7 @@ function Home() {
 
             <Link to="/discipline/inorganic" className="feature-card glass-panel block hover:-translate-y-2 transition-transform duration-300" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon-wrapper">
-                <Atom size={32} />
+                <Atom size={48} />
               </div>
               <h3>Inorganic Chemistry</h3>
               <p>Understand periodic trends, coordination compounds, and metallurgy through structured patterns and fundamental principles.</p>

@@ -24,6 +24,14 @@ const PremiumLayout = () => {
   // Memoize the context object to prevent Outlet re-renders
   const outletContext = useMemo(() => ({ setMetalIntensity, setMetalColor }), [setMetalIntensity, setMetalColor]);
 
+  // Scroll to top on route change
+  useEffect(() => {
+    const scrollContainer = document.getElementById('premium-scroll-container');
+    if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  }, [location.pathname]);
+
   // Simulate Ad Playing
   useEffect(() => {
     if (showAd) {
@@ -181,7 +189,7 @@ const PremiumLayout = () => {
         </div>
 
         {/* Content Area - Where the actual lab pages render */}
-        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}>
+        <div id="premium-scroll-container" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}>
           <Outlet context={outletContext} />
         </div>
       </div>

@@ -10,50 +10,26 @@ const PeriodicTablePage: React.FC = () => {
   const [selectedElement, setSelectedElement] = useState<Element | null>(null);
 
   return (
-    <div className="periodic-table-page" style={{ 
-      color: '#fff',
-      paddingTop: '60px',
-      paddingBottom: '100px',
-      position: 'relative',
-    }}>
+    <div className="main-content min-h-screen pb-24 relative overflow-hidden">
       {/* Background Decor */}
-      <div className="orb orb-1" style={{ opacity: 0.1, top: '10%', left: '5%', width: '500px', height: '500px' }}></div>
-      <div className="orb orb-2" style={{ opacity: 0.05, bottom: '5%', right: '5%', width: '400px', height: '400px' }}></div>
+      <div className="orb orb-1 opacity-10 top-[10%] left-[5%] w-[500px] h-[500px] pointer-events-none"></div>
+      <div className="orb orb-2 opacity-5 bottom-[5%] right-[5%] w-[400px] h-[400px] pointer-events-none"></div>
 
-      <div className="container" style={{ position: 'relative', zIndex: 2 }}>
+      <div className="container relative z-10 px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <header style={{ 
-          position: 'static', 
-          background: 'transparent', 
-          backdropFilter: 'none', 
-          border: 'none', 
-          padding: '0', 
-          marginBottom: '60px',
-          textAlign: 'center' 
-        }}>
+        <header className="static bg-transparent backdrop-filter-none border-none p-0 mb-12 sm:mb-20 text-center">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
           >
-            <Link to="/" style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '8px', 
-              color: 'var(--accent-cyan)', 
-              textDecoration: 'none',
-              marginBottom: '20px',
-              fontWeight: 600,
-              padding: '8px 20px',
-              background: 'rgba(0, 240, 255, 0.05)',
-              borderRadius: '100px',
-              border: '1px solid rgba(0, 240, 255, 0.2)'
-            }}>
+            <Link to="/" className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 rounded-full text-accent-cyan hover:text-white transition-all duration-300 mb-8 font-semibold">
               <ArrowLeft className="h-4 w-4" /> Back to Dashboard
             </Link>
-            <h1 className="text-gradient" style={{ fontSize: '4.5rem', fontWeight: 900, marginBottom: '16px', letterSpacing: '-2px' }}>
+            <h1 className="text-gradient text-5xl sm:text-7xl font-black mb-6 tracking-tighter leading-tight">
               The Periodic Table
             </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.3rem', maxWidth: '750px', margin: '0 auto', lineHeight: 1.6 }}>
+            <p className="text-white/60 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
               Explore the fundamental building blocks of the universe through a high-definition interactive experience.
             </p>
           </motion.div>
