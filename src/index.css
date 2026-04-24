@@ -143,17 +143,67 @@ header {
 .hero {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   text-align: center;
-  padding-top: 80px;
+  padding: 150px 0 60px;
   position: relative;
+  overflow: hidden;
 }
 
 .hero-content {
-  max-width: 800px;
+  max-width: 980px;
+  width: 100%;
   position: relative;
   z-index: 2;
+}
+
+.hero-panel {
+  padding: 40px 36px;
+  background: linear-gradient(180deg, rgba(7, 12, 10, 0.88), rgba(7, 9, 12, 0.76));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+.hero-atmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.home-hero-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(2, 18, 7, 0.78) 0%, rgba(3, 14, 10, 0.5) 35%, rgba(5, 5, 5, 0.18) 65%, rgba(5, 5, 5, 0.72) 100%),
+    radial-gradient(circle at 20% 20%, rgba(0, 240, 255, 0.08), transparent 22%),
+    radial-gradient(circle at 80% 15%, rgba(138, 43, 226, 0.12), transparent 18%);
+  pointer-events: none;
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(90px);
+  opacity: 0.45;
+}
+
+.hero-orb-left {
+  top: 14%;
+  left: 7%;
+  width: 280px;
+  height: 280px;
+  background: rgba(0, 240, 255, 0.16);
+}
+
+.hero-orb-right {
+  top: 22%;
+  right: 8%;
+  width: 360px;
+  height: 360px;
+  background: rgba(138, 43, 226, 0.2);
 }
 
 .hero-badge {
@@ -231,6 +281,33 @@ header {
   display: flex;
   gap: 16px;
   justify-content: center;
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 36px;
+}
+
+.hero-metric {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 18px 16px;
+}
+
+.hero-metric strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.hero-metric span {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
 }
 
 /* Sections */
@@ -589,6 +666,12 @@ footer {
   .hero h1 {
     font-size: 3.5rem;
   }
+  .hero {
+    padding-top: 140px;
+  }
+  .hero-metrics {
+    grid-template-columns: 1fr;
+  }
   .community-grid {
     grid-template-columns: 1fr;
     gap: 48px;
@@ -598,6 +681,12 @@ footer {
 @media (max-width: 768px) {
   .hero h1 {
     font-size: 2.8rem;
+  }
+  .hero {
+    padding: 132px 0 48px;
+  }
+  .hero-panel {
+    padding: 28px 22px;
   }
   .nav-links {
     display: none; /* simple mobile hide for now */

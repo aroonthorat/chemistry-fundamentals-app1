@@ -44,11 +44,12 @@ function Home() {
   return (
     <>
       {/* 3D WebGL Background Layer */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: -1, background: '#000' }}>
-        <Canvas camera={{ position: [0, 0, 1] }}>
+      <div style={{ position: 'fixed', inset: 0, zIndex: -2, background: '#000' }}>
+        <Canvas camera={{ position: [0, 0, 1] }} dpr={[1, 1.5]}>
           <AcidicBackground color="#00ff88" />
         </Canvas>
       </div>
+      <div className="home-hero-backdrop" />
 
       {/* Navigation */}
       <header>
@@ -71,19 +72,39 @@ function Home() {
 
       {/* Hero Section */}
       <section className="hero">
+        <div className="hero-atmosphere" aria-hidden="true">
+          <div className="hero-orb hero-orb-left" />
+          <div className="hero-orb hero-orb-right" />
+        </div>
         <div className="container hero-content">
-          <div className="hero-badge">
-            <GraduationCap size={16} /> XI, XII, NEET & JEE Preparation
-          </div>
-          <h1>Master the Elements of <span className="text-gradient">Success</span></h1>
-          <p>Your ultimate companion for dominating Organic, Inorganic, and Physical Chemistry. Join our community of thousands of students excelling in board exams and competitive tests.</p>
-          <div className="hero-buttons">
-            <Link to="/acid-reactions" className="btn btn-primary" style={{ background: 'var(--accent-cyan)', color: '#000', fontWeight: 'bold' }}>
-              Experience Acid Reactions <Sparkles size={20} style={{ marginLeft: '8px' }} />
-            </Link>
-            <a href="#topics" className="btn btn-secondary">
-              Explore Topics <ArrowRight size={20} />
-            </a>
+          <div className="hero-panel glass-panel">
+            <div className="hero-badge">
+              <GraduationCap size={16} /> XI, XII, NEET & JEE Preparation
+            </div>
+            <h1>Master the Elements of <span className="text-gradient">Success</span></h1>
+            <p>Your ultimate companion for dominating Organic, Inorganic, and Physical Chemistry. Join our community of thousands of students excelling in board exams and competitive tests.</p>
+            <div className="hero-buttons">
+              <Link to="/acid-reactions" className="btn btn-primary" style={{ background: 'var(--accent-cyan)', color: '#000', fontWeight: 'bold' }}>
+                Experience Acid Reactions <Sparkles size={20} style={{ marginLeft: '8px' }} />
+              </Link>
+              <a href="#topics" className="btn btn-secondary">
+                Explore Topics <ArrowRight size={20} />
+              </a>
+            </div>
+            <div className="hero-metrics">
+              <div className="hero-metric">
+                <strong>35k+</strong>
+                <span>Active learners</span>
+              </div>
+              <div className="hero-metric">
+                <strong>3</strong>
+                <span>Core chemistry tracks</span>
+              </div>
+              <div className="hero-metric">
+                <strong>Interactive</strong>
+                <span>Labs and visual tools</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
