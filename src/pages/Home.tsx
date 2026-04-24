@@ -94,29 +94,29 @@ function Home() {
           </div>
 
           <div className="features-grid">
-            <div className="feature-card glass-panel">
+            <Link to="/discipline/physical" className="feature-card glass-panel block hover:-translate-y-2 transition-transform duration-300" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon-wrapper">
                 <Beaker size={32} />
               </div>
               <h3>Physical Chemistry</h3>
               <p>Master thermodynamics, kinetics, and quantum chemistry with clear mathematical foundations and intuitive problem-solving strategies.</p>
-            </div>
+            </Link>
 
-            <div className="feature-card glass-panel">
+            <Link to="/discipline/organic" className="feature-card glass-panel block hover:-translate-y-2 transition-transform duration-300" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon-wrapper">
                 <TestTube size={32} />
               </div>
               <h3>Organic Chemistry</h3>
               <p>Demystify reaction mechanisms, stereochemistry, and synthesis. Learn to think logically rather than memorizing infinite reactions.</p>
-            </div>
+            </Link>
 
-            <div className="feature-card glass-panel">
+            <Link to="/discipline/inorganic" className="feature-card glass-panel block hover:-translate-y-2 transition-transform duration-300" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon-wrapper">
                 <Atom size={32} />
               </div>
               <h3>Inorganic Chemistry</h3>
               <p>Understand periodic trends, coordination compounds, and metallurgy through structured patterns and fundamental principles.</p>
-            </div>
+            </Link>
           </div>
         </div>
       </section>

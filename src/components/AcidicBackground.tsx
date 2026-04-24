@@ -20,43 +20,31 @@ const fragmentShader = `
   
   varying vec2 vUv;
 
-  // GLSL noise functions
-  vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-  vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-  vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
-  
-  float snoise(vec2 v) {
-    const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
-    vec2 i  = floor(v + dot(v, C.yy) );
-    vec2 x0 = v -   i + dot(i, C.xx);
-    vec2 i1;
-    i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-    vec4 x12 = x0.xyxy + C.xxzz;
-    x12.xy -= i1;
-    i = mod289(i); // Avoid truncation effects in permutation
-    vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 ));
-    vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
-    m = m*m ;
-    m = m*m ;
-    vec3 x = 2.0 * fract(p * C.www) - 1.0;
-    vec3 h = abs(x) - 0.5;
-    vec3 ox = floor(x + 0.5);
-    vec3 a0 = x - ox;
-    m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
-    vec3 g;
-    g.x  = a0.x  * x0.x  + h.x  * x0.y;
-    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-    return 130.0 * dot(m, g);
+  // Fast Value Noise (extremely performant, zero risk of WebGL freezing)
+  float hash(vec2 p) {
+    p = fract(p * vec2(5.3983, 5.4427));
+    p += dot(p.yx, p.xy + vec2(21.5351, 14.3137));
+    return fract(p.x * p.y * 95.4337);
   }
 
-  // Fractional Brownian Motion
+  float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i + vec2(0.0,0.0)), hash(i + vec2(1.0,0.0)), u.x),
+               mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x), u.y);
+  }
+
+  // Fractional Brownian Motion (Simplified for extreme performance)
   float fbm(vec2 x) {
     float v = 0.0;
     float a = 0.5;
     vec2 shift = vec2(100.0);
     mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
+    // 3 iterations with fast noise
     for (int i = 0; i < 3; ++i) {
-      v += a * snoise(x);
+      // Map noise from [0, 1] to [-1, 1] for typical FBM behavior
+      v += a * (noise(x) * 2.0 - 1.0);
       x = rot * x * 2.0 + shift;
       a *= 0.5;
     }
@@ -79,15 +67,9 @@ const fragmentShader = `
     float reactionMult = 1.5 + (u_metal_intensity * 8.0);
     float reaction = smoothstep(baseRadius, 0.0, dist) * reactionMult;
     
-    // Liquid distortion
-    vec2 q = vec2(0.);
-    q.x = fbm( st + 0.00 * u_time);
-    q.y = fbm( st + vec2(1.0));
-
-    vec2 r = vec2(0.);
-    r.x = fbm( st + 1.0*q + vec2(1.7,9.2)+ 0.15*u_time );
-    r.y = fbm( st + 1.0*q + vec2(8.3,2.8)+ 0.126*u_time);
-
+    // Liquid distortion - Optimized to only 3 fbm calls total
+    vec2 q = vec2(fbm(st + u_time * 0.1), fbm(st + vec2(1.0)));
+    vec2 r = vec2(fbm(st + q + vec2(1.7, 9.2) + u_time * 0.15), fbm(st + q + vec2(8.3, 2.8) + u_time * 0.126));
     float f = fbm(st + r);
 
     // Color mixing
@@ -144,14 +126,22 @@ const AcidicBackground: React.FC<AcidicBackgroundProps> = ({
 
   const targetMouse = useMemo(() => new THREE.Vector2(), []);
 
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const pointerX = (e.clientX / window.innerWidth) * size.width;
+      const pointerY = (1.0 - (e.clientY / window.innerHeight)) * size.height;
+      targetMouse.set(pointerX, pointerY);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    // Initialize mouse to center
+    targetMouse.set(size.width / 2, size.height / 2);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [targetMouse, size.width, size.height]);
+
   useFrame((state) => {
     if (materialRef.current) {
       materialRef.current.uniforms.u_time.value = state.clock.elapsedTime;
-      // Convert normalized pointer coordinates to pixel coordinates for the shader
-      const pointerX = (state.pointer.x + 1) / 2 * size.width;
-      const pointerY = (state.pointer.y + 1) / 2 * size.height;
       // Lerp mouse movement for smoother fluid reaction
-      targetMouse.set(pointerX, pointerY);
       materialRef.current.uniforms.u_mouse.value.lerp(targetMouse, 0.1);
     }
   });

@@ -6,6 +6,7 @@ import PeriodicTable from './pages/PeriodicTable';
 import ElementWiki from './pages/ElementWiki';
 import AcidReactions from './pages/AcidReactions';
 import PremiumLayout from './layouts/PremiumLayout';
+import DisciplineWiki from './pages/DisciplineWiki';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/chemist-lab" element={<ChemicalLab />} />
         <Route path="/periodic-table" element={<PeriodicTable />} />
         <Route path="/acid-reactions" element={<AcidReactions />} />
+        <Route path="/discipline/:disciplineId" element={<DisciplineWiki />} />
       </Route>
     </Routes>
   );

@@ -104,6 +104,7 @@ const METALS = [
 const AcidReactions = () => {
   const { setMetalIntensity, setMetalColor } = useOutletContext<PremiumContext>();
   const [activeMetal, setActiveMetal] = useState(METALS[4]); // Start with Gold (no reaction)
+  const [isExperimentMode, setIsExperimentMode] = useState(false);
 
   // Update background context whenever metal changes
   useEffect(() => {
@@ -120,11 +121,11 @@ const AcidReactions = () => {
   }, [setMetalIntensity, setMetalColor]);
 
   return (
-    <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', color: 'white', position: 'relative', zIndex: 10 }}>
+    <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', color: 'white', position: 'relative', zIndex: 10, minHeight: '100%' }}>
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        style={{ marginBottom: '40px' }}
+        animate={{ opacity: isExperimentMode ? 0 : 1, y: 0 }}
+        style={{ marginBottom: '40px', pointerEvents: isExperimentMode ? 'none' : 'auto' }}
       >
         <div className="hero-badge" style={{ marginBottom: '20px', display: 'inline-flex' }}>
           <Sparkles size={16} style={{ marginRight: '8px' }} /> Interactive Reaction Simulation
@@ -135,7 +136,29 @@ const AcidReactions = () => {
         </p>
       </motion.div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
+      {isExperimentMode && (
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '3rem', color: 'white', textShadow: '0 0 20px rgba(0,0,0,0.8)', opacity: 0.5 }}>Move your mouse to react</h2>
+          <button 
+            onClick={() => setIsExperimentMode(false)}
+            style={{ 
+              marginTop: '20px', 
+              padding: '15px 30px', 
+              background: 'rgba(0,0,0,0.6)', 
+              border: '1px solid rgba(255,255,255,0.3)', 
+              color: 'white', 
+              borderRadius: '100px', 
+              cursor: 'pointer',
+              fontSize: '1.1rem',
+              backdropFilter: 'blur(10px)'
+            }}
+          >
+            Exit Experiment Mode
+          </button>
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', opacity: isExperimentMode ? 0 : 1, pointerEvents: isExperimentMode ? 'none' : 'auto', transition: 'opacity 0.3s' }}>
         
         {/* Metal Selection Panel */}
         <div className="glass-panel" style={{ padding: '30px' }}>
@@ -212,6 +235,32 @@ const AcidReactions = () => {
                 {activeMetal.desc}
               </p>
             </div>
+            
+            <button
+              onClick={() => setIsExperimentMode(true)}
+              style={{
+                marginTop: '30px',
+                padding: '15px',
+                width: '100%',
+                background: `linear-gradient(45deg, ${activeMetal.color}22, ${activeMetal.color}44)`,
+                border: `1px solid ${activeMetal.color}88`,
+                color: 'white',
+                borderRadius: '12px',
+                fontWeight: 600,
+                fontSize: '1.1rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+                transition: 'all 0.2s'
+              }}
+              onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+              onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              <Sparkles size={20} />
+              Start Full-Screen Experiment
+            </button>
           </div>
         </div>
 
