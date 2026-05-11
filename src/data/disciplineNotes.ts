@@ -19,7 +19,7 @@ export const disciplineNotes: DisciplineNote[] = [
     "subtopics": [
       {
         "id": "chemical_thermodynamics",
-        "title": "Chemical Thermodynamics",
+        "title": "Thermodynamics",
         "content": "<h2>1. Fundamentals and the First Law</h2><p>Thermodynamics is the study of energy transformations. In JEE/NEET, we focus on macroscopic properties and state functions. A <b>State Function</b> (like $U$, $H$, $S$, $G$) depends only on the current state, not the path taken.</p><h3>The First Law</h3><p>Energy cannot be created or destroyed, only transformed:</p><div class='math-block'>$$\\Delta U = q + w$$</div><ul><li><b>Work ($w$):</b> For expansion against constant external pressure, $w = -P_{ext}\\Delta V$. For reversible isothermal expansion, $w = -2.303nRT \\log(V_2/V_1)$.</li><li><b>Enthalpy ($H$):</b> Defined as $H = U + PV$. At constant pressure, $\\Delta H = q_p$.</li></ul><div class='wiki-callout callout-tip'><h4>💡 Pro Tip: Sign Convention</h4><p>Remember: Work done <b>on</b> the system is positive ($+w$), and work done <b>by</b> the system is negative ($-w$). This is the IUPAC convention!</p></div><h2>2. The Second Law and Spontaneity</h2><p>The universe tends toward disorder. Entropy ($S$) is a measure of this randomness. For a spontaneous process, $\\Delta S_{total} = \\Delta S_{sys} + \\Delta S_{surr} > 0$.</p><h3>Gibbs Free Energy ($G$)</h3><p>The ultimate criterion for spontaneity at constant $T$ and $P$:</p><div class='math-block'>$$\\Delta G = \\Delta H - T\\Delta S$$</div><ul><li><b>$\\Delta G < 0$:</b> Spontaneous (Exergonic).</li><li><b>$\\Delta G > 0$:</b> Non-spontaneous (Endergonic).</li><li><b>$\\Delta G = 0$:</b> Equilibrium.</li></ul><div class='wiki-callout callout-exam'><h4>🎯 JEE/NEET Corner</h4><p>The relation $\\Delta G^\\circ = -2.303RT \\log K_{eq}$ is frequently tested. Remember that $\\Delta G^\\circ$ refers to standard states, while $\\Delta G$ determines directionality at any state.</p></div>"
       },
       {
@@ -31,6 +31,16 @@ export const disciplineNotes: DisciplineNote[] = [
         "id": "electrochemistry",
         "title": "Electrochemistry",
         "content": "<h2>1. Electrochemical Cells</h2><p><b>Galvanic Cells:</b> Spontaneous chemical energy $\\to$ electrical energy ($\\Delta G < 0$). <b>Electrolytic Cells:</b> Electrical energy $\\to$ non-spontaneous chemical change.</p><h3>Nernst Equation</h3><p>Calculates cell potential under any conditions:</p><div class='math-block'>$$E_{cell} = E^\\circ_{cell} - \\frac{0.0591}{n} \\log Q \\quad (at 298 K)$$</div><h2>2. Conductance and Molar Conductivity</h2><p><b>Kohlrausch's Law:</b> At infinite dilution, each ion migrates independently. $\\Lambda_m^\\infty = \\nu_+ \\lambda_+^\\infty + \\nu_- \\lambda_-^\\infty$. This allows calculation of $\\Lambda_m^\\infty$ for weak electrolytes.</p><div class='wiki-callout callout-alert'><h4>⚠️ Common Pitfall</h4><p>In the Nernst equation, $n$ is the number of electrons transferred in the <i>balanced</i> redox reaction. Don't forget to balance the reaction first!</p></div>"
+      },
+      {
+        "id": "solid_state",
+        "title": "Solid State",
+        "content": "<h2>1. Crystalline vs. Amorphous</h2><p>Crystalline solids have a regular arrangement (long-range order), while amorphous solids like glass are 'pseudo-solids' or supercooled liquids.</p><h3>Unit Cells and Packing</h3><ul><li><b>Simple Cubic (SCC):</b> $Z=1$, Packing Efficiency = 52.4%.</li><li><b>Body-Centered (BCC):</b> $Z=2$, Packing Efficiency = 68%.</li><li><b>Face-Centered (FCC/CCP):</b> $Z=4$, Packing Efficiency = 74%.</li></ul><div class='wiki-callout callout-tip'><h4>💎 Coordination Number</h4><p>In FCC, each sphere is in contact with 12 others. For BCC, it is 8. This is a very common MCQ in NEET!</p></div>"
+      },
+      {
+        "id": "solutions",
+        "title": "Solutions & Colligative Properties",
+        "content": "<h2>1. Raoult's Law</h2><p>The partial vapor pressure of a component is proportional to its mole fraction: $P_A = P_A^\\circ x_A$.</p><ul><li><b>Ideal Solutions:</b> $\\Delta H_{mix} = 0$, $\\Delta V_{mix} = 0$.</li><li><b>Non-Ideal:</b> Show positive or negative deviations from Raoult's law.</li></ul><h2>2. Colligative Properties</h2><p>Properties that depend only on the <i>number</i> of solute particles, not their nature.</p><ul><li><b>Relative Lowering of Vapor Pressure</b></li><li><b>Elevation of Boiling Point:</b> $\\Delta T_b = i K_b m$</li><li><b>Depression of Freezing Point:</b> $\\Delta T_f = i K_f m$</li><li><b>Osmotic Pressure:</b> $\\pi = iCRT$</li></ul><div class='wiki-callout callout-alert'><h4>🧪 van't Hoff Factor ($i$)</h4><p>Don't forget $i$! For dissociation (e.g., $NaCl$), $i > 1$. For association (e.g., acetic acid in benzene), $i < 1$.</p></div>"
       }
     ]
   },
@@ -45,9 +55,19 @@ export const disciplineNotes: DisciplineNote[] = [
         "content": "<h2>1. Electronic Effects</h2><p>Electronic effects determine the reactivity and stability of organic molecules.</p><ul><li><b>Inductive Effect:</b> Polarisation of $\\sigma$-bonds due to electronegativity. It decreases rapidly with distance.</li><li><b>Resonance Effect:</b> Delocalisation of $\\pi$-electrons. It is a permanent effect and much stronger than the inductive effect.</li><li><b>Hyperconjugation:</b> 'No-bond resonance' involving $\\sigma$-electrons of C-H bonds adjacent to unsaturated systems.</li></ul><h2>2. Reaction Intermediates</h2><p>Stability orders are critical for predicting major products:</p><ul><li><b>Carbocations ($C^+$):</b> $3^\\circ > 2^\\circ > 1^\\circ > methyl$. Stabilized by $+I$ and $+M$ effects.</li><li><b>Free Radicals:</b> Follow the same order as carbocations.</li><li><b>Carbanions ($C^-$):</b> $methyl > 1^\\circ > 2^\\circ > 3^\\circ$. Stabilized by $-I$ and $-M$ effects.</li></ul><div class='wiki-callout callout-tip'><h4>🔬 Mechanism Insight</h4><p>Always look for <b>Carbocation Rearrangement</b> (Hydride or Methyl shift) if a more stable carbocation can be formed. This is a favorite JEE topic!</p></div>"
       },
       {
+        "id": "isomerism",
+        "title": "Isomerism",
+        "content": "<h2>1. Structural Isomerism</h2><p>Same molecular formula, different connectivity. Includes Chain, Positional, Functional, Metamerism, and Tautomerism.</p><h2>2. Stereoisomerism</h2><ul><li><b>Geometrical Isomerism:</b> Restrained rotation (C=C or rings). Cis/Trans or E/Z nomenclature.</li><li><b>Optical Isomerism:</b> Chirality and non-superimposable mirror images. A molecule with one chiral center is always optically active.</li></ul><div class='wiki-callout callout-tip'><h4>🌀 Meso Compounds</h4><p>A molecule with chiral centers can be optically <b>inactive</b> if it has a plane of symmetry. These are called Meso compounds.</p></div>"
+      },
+      {
         "id": "hydrocarbons",
-        "title": "Alkanes, Alkenes, and Alkynes",
+        "title": "Hydrocarbons",
         "content": "<h2>1. Alkenes: Electrophilic Addition</h2><p>The most characteristic reaction of alkenes. <b>Markownikoff's Rule:</b> The negative part of the addendum goes to the carbon with fewer hydrogen atoms. <b>Peroxide Effect:</b> Only HBr shows Anti-Markownikoff addition in the presence of peroxides.</p><h2>2. Aromaticity and Huckel's Rule</h2><p>A compound is aromatic if it is Cyclic, Planar, Conjugated, and has $(4n+2)\\pi$ electrons. Non-aromatic compounds fail one of the first three criteria. Anti-aromatic compounds have $4n\\pi$ electrons.</p><div class='wiki-callout callout-exam'><h4>🌟 High-Yield Reagents</h4><p><b>Ozonolysis ($O_3, Zn/H_2O$):</b> Cleaves C=C bonds to form carbonyl compounds. It's the best way to locate the position of a double bond.</p></div>"
+      },
+      {
+        "id": "haloalkanes",
+        "title": "Haloalkanes & Haloarenes",
+        "content": "<h2>1. Nucleophilic Substitution</h2><ul><li><b>$S_N1$:</b> Two steps, carbocation intermediate, racemization. Rate $\\propto [Substrate]$. Stability: $3^\\circ > 2^\\circ > 1^\\circ$.</li><li><b>$S_N2$:</b> One step, transition state, inversion of configuration (Walden Inversion). Rate $\\propto [Substrate][Nu^-]$. Reactivity: $CH_3X > 1^\\circ > 2^\\circ > 3^\\circ$.</li></ul><div class='wiki-callout callout-tip'><h4>🧪 Solvent Effect</h4><p>Polar Protic solvents (like $H_2O, EtOH$) favor $S_N1$, while Polar Aprotic solvents (like $DMSO, Acetone$) favor $S_N2$.</p></div>"
       }
     ]
   },
@@ -65,6 +85,11 @@ export const disciplineNotes: DisciplineNote[] = [
         "id": "coordination_compounds",
         "title": "Coordination Chemistry",
         "content": "<h2>1. Isomerism in Complexes</h2><p><b>Geometrical Isomerism:</b> Cis/Trans for square planar ($MA_2B_2$) and octahedral ($MA_4B_2$). <b>Optical Isomerism:</b> Common in octahedral complexes with chelate ligands like 'en'.</p><h2>2. Crystal Field Theory (CFT)</h2><p>Splitting of d-orbitals in octahedral ($t_{2g}$ and $e_g$) and tetrahedral fields. The magnitude of splitting ($\\Delta_o$) depends on the ligand strength (Spectrochemical Series).</p><div class='wiki-callout callout-exam'><h4>🏆 JEE Favorite</h4><p>Strong field ligands (like $CN^-, CO$) cause pairing of electrons, leading to low-spin, inner-orbital complexes ($d^2sp^3$).</p></div>"
+      },
+      {
+        "id": "p_block",
+        "title": "The p-Block Elements",
+        "content": "<h2>1. Group 15 to 18 Trends</h2><p>The p-block is diverse, containing metals, non-metals, and metalloids. Key concepts include Inert Pair Effect, Catenation, and anomalous behavior of the first element in each group.</p><h2>2. Important Compounds</h2><ul><li><b>Nitrogen:</b> Ammonia (Haber's process) and Nitric Acid (Ostwald's process).</li><li><b>Sulfur:</b> Sulfuric Acid (Contact process) and its oxoacids.</li><li><b>Halogens:</b> Interhalogen compounds (e.g., $ICl_3$) and their strong oxidizing nature.</li></ul><div class='wiki-callout callout-tip'><h4>⚠️ Inert Pair Effect</h4><p>In heavier elements of groups 13, 14, and 15, the lower oxidation state becomes more stable than the higher one (e.g., $Pb^{2+}$ is more stable than $Pb^{4+}$). This is frequently asked!</p></div>"
       }
     ]
   }

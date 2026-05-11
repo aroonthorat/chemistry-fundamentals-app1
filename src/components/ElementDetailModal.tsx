@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -123,6 +123,34 @@ const InfoItem: React.FC<{ icon: React.ReactNode, label: string, value: React.Re
 );
 
 const ElementDetailModal: React.FC<ElementDetailModalProps> = ({ element, onClose }) => {
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1024);
+
+  useEffect(() => {
+    const handleResize = () => setIsLargeScreen(window.innerWidth >= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (element) {
+      const premiumContainer = document.getElementById('premium-scroll-container');
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalPremiumOverflow = premiumContainer?.style.overflowY || 'auto';
+
+      document.body.style.overflow = 'hidden';
+      if (premiumContainer) {
+        premiumContainer.style.overflowY = 'hidden';
+      }
+
+      return () => {
+        document.body.style.overflow = originalBodyOverflow;
+        if (premiumContainer) {
+          premiumContainer.style.overflowY = originalPremiumOverflow;
+        }
+      };
+    }
+  }, [element]);
+
   if (!element) return null;
 
   const getCategoryColor = (category: string) => {
@@ -142,7 +170,7 @@ const ElementDetailModal: React.FC<ElementDetailModalProps> = ({ element, onClos
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
-          padding: '20px'
+          padding: isLargeScreen ? '20px' : '0'
         }}>
           <motion.div 
             initial={{ opacity: 0 }}
@@ -163,16 +191,17 @@ const ElementDetailModal: React.FC<ElementDetailModalProps> = ({ element, onClos
             exit={{ opacity: 0, scale: 0.9, rotateX: 10 }}
             style={{
               width: '100%',
-              maxWidth: '1100px',
-              maxHeight: '85vh',
+              maxWidth: isLargeScreen ? '1100px' : '100%',
+              height: isLargeScreen ? 'auto' : '100%',
+              maxHeight: isLargeScreen ? '90vh' : '100%',
               background: '#040408',
-              borderRadius: '40px',
-              border: `1px solid ${color}44`,
+              borderRadius: isLargeScreen ? '40px' : '0',
+              border: isLargeScreen ? `1px solid ${color}44` : 'none',
               position: 'relative',
               overflow: 'hidden',
-              display: 'grid',
-              gridTemplateColumns: '400px 1fr',
-              boxShadow: `0 0 80px ${color}15`,
+              display: 'flex',
+              flexDirection: isLargeScreen ? 'row' : 'column',
+              boxShadow: isLargeScreen ? `0 0 80px ${color}15` : 'none',
               zIndex: 9001
             }}
           >
@@ -206,16 +235,18 @@ const ElementDetailModal: React.FC<ElementDetailModalProps> = ({ element, onClos
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              borderRight: '1px solid rgba(255,255,255,0.05)',
+              borderRight: isLargeScreen ? '1px solid rgba(255,255,255,0.05)' : 'none',
+              borderBottom: isLargeScreen ? 'none' : '1px solid rgba(255,255,255,0.05)',
               overflowY: 'auto',
-              scrollbarWidth: 'none'
+              scrollbarWidth: 'none',
+              flex: isLargeScreen ? '0 0 400px' : 'none'
             }}>
-              <div style={{ marginBottom: '30px', position: 'relative', transform: 'scale(0.85)' }}>
+              <div style={{ marginBottom: '30px', position: 'relative', transform: isLargeScreen ? 'scale(0.85)' : 'scale(0.7)' }}>
                  <BohrModel element={element} color={color} />
               </div>
 
               <div style={{ textAlign: 'center', zIndex: 1, width: '100%' }}>
-                <h2 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '4px', letterSpacing: '-2px', color: '#fff' }}>{element.name}</h2>
+                <h2 style={{ fontSize: isLargeScreen ? '3.5rem' : '2.5rem', fontWeight: 900, marginBottom: '4px', letterSpacing: '-2px', color: '#fff' }}>{element.name}</h2>
                 <div style={{ 
                   fontSize: '0.8rem', 
                   color: color,
@@ -275,7 +306,7 @@ const ElementDetailModal: React.FC<ElementDetailModalProps> = ({ element, onClos
             </div>
 
             {/* Right Column: Detailed Insights */}
-            <div style={{ padding: '40px', overflowY: 'auto', background: '#05050a' }}>
+            <div style={{ padding: '40px', overflowY: 'auto', background: '#05050a', flex: 1 }}>
               <section style={{ marginBottom: '40px' }}>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '12px', color: color, display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Activity size={18} /> Overview
@@ -287,7 +318,7 @@ const ElementDetailModal: React.FC<ElementDetailModalProps> = ({ element, onClos
                 {/* Atomic & Chemical Section */}
                 <section>
                   <h4 style={{ fontSize: '0.8rem', color: '#555', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 800, marginBottom: '15px' }}>Atomic & Chemical</h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isLargeScreen ? 'repeat(2, 1fr)' : '1fr', gap: '15px' }}>
                     <InfoItem icon={<Layers size={16} />} label="Configuration" value={element.electron_configuration} color={color} />
                     <InfoItem icon={<Zap size={16} />} label="Electronegativity" value={element.electronegativity_pauling || 'N/A'} color={color} />
                     <InfoItem icon={<User size={16} />} label="Discovered By" value={element.discovered_by || 'Unknown'} color={color} />
@@ -298,7 +329,7 @@ const ElementDetailModal: React.FC<ElementDetailModalProps> = ({ element, onClos
                 {/* Thermal Properties Section */}
                 <section>
                   <h4 style={{ fontSize: '0.8rem', color: '#555', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 800, marginBottom: '15px' }}>Thermal Properties</h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isLargeScreen ? 'repeat(2, 1fr)' : '1fr', gap: '15px' }}>
                     <InfoItem icon={<Thermometer size={16} />} label="Melting Point" value={element.melt ? `${element.melt} K` : 'N/A'} color={color} />
                     <InfoItem icon={<Activity size={16} />} label="Boiling Point" value={element.boil ? `${element.boil} K` : 'N/A'} color={color} />
                   </div>
@@ -311,8 +342,10 @@ const ElementDetailModal: React.FC<ElementDetailModalProps> = ({ element, onClos
                 paddingTop: '30px',
                 borderTop: '1px solid rgba(255,255,255,0.05)',
                 display: 'flex', 
-                alignItems: 'center',
-                justifyContent: 'space-between'
+                flexDirection: isLargeScreen ? 'row' : 'column',
+                alignItems: isLargeScreen ? 'center' : 'flex-start',
+                justifyContent: 'space-between',
+                gap: '20px'
               }}>
                 <div style={{ display: 'flex', gap: '12px' }}>
                   <Link 

@@ -47,3 +47,12 @@ This file is the shared handoff log for Codex and Google Antigravity while we wo
 - Observed active work areas: periodic table UI, discipline wiki content/layout, global styling, and Tailwind/PostCSS setup.
 - Codex repaired shared-workspace issues in the actively edited app shell: moved TypeScript incremental cache files out of `node_modules/.tmp`, tightened typing in periodic table components, removed wiki effect-driven state reset, and replaced `@ts-ignore` Facebook SDK setup on Home with explicit window typings.
 - Codex verified a successful production build after running outside the sandbox, then fixed the remaining PostCSS warning by moving the font `@import` ahead of Tailwind directives in `src/index.css`.
+
+### 2026-04-25
+
+- Antigravity refined the Wiki interface to address "scattered text" feedback.
+- Tightened `DisciplineWiki.tsx` layout: reduced vertical margins for subtopic headers and prose elements.
+- Updated `src/index.css` to center the `.wiki-prose-container` and reduce callout box spacing for a more focused reading experience.
+- Added `sidebar-nav-active` class in `index.css` with a subtle glow for better navigation contrast in the sidebar.
+- Expanded `src/data/disciplineNotes.ts` with comprehensive high-yield notes for JEE/NEET, including new subtopics: Solid State, Solutions, Isomerism, Haloalkanes, and p-Block Elements.
+- Verified that the layout feels more premium and balanced on wide screens.

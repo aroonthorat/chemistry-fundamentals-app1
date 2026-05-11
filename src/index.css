@@ -131,6 +131,12 @@ header {
   color: var(--text-primary);
 }
 
+.sidebar-nav-active {
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+  border-color: rgba(0, 240, 255, 0.3) !important;
+}
+
 .nav-links a::after {
   content: '';
   position: absolute;
@@ -384,8 +390,8 @@ section {
 .wiki-prose-container {
   width: 100%;
   max-width: 800px;
-  margin: 0;
-  line-height: 1.6;
+  margin: 0 auto;
+  line-height: 1.7;
 }
 
 .sidebar-sticky {
@@ -871,12 +877,12 @@ footer {
 .wiki-callout {
   padding: 1.25rem 1.5rem;
   border-radius: 1.25rem;
-  margin: 2rem 0;
+  margin: 1.5rem 0;
   border: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
   overflow: hidden;
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .wiki-callout::before {

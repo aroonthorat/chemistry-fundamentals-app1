@@ -149,7 +149,7 @@ function Home() {
       </section>
 
       {/* Interactive Periodic Table Section */}
-      <section id="periodic-table" className="glass-panel" style={{ margin: '40px 24px', position: 'relative', zIndex: 10, overflow: 'hidden' }}>
+      <section id="periodic-table" className="glass-panel" style={{ margin: '40px 24px', position: 'relative', zIndex: 10 }}>
         <div className="container" style={{ padding: '80px 24px' }}>
           <div className="section-header" style={{ textAlign: 'center', marginBottom: '60px' }}>
             <div className="hero-badge" style={{ margin: '0 auto 20px' }}>

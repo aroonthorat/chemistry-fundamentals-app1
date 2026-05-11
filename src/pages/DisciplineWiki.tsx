@@ -7,6 +7,10 @@ import { disciplineNotes } from '../data/disciplineNotes';
 declare global {
   interface Window {
     MathJax?: {
+      startup?: {
+        promise?: Promise<void>;
+      };
+      typesetClear?: (elements?: Array<HTMLElement | null>) => void;
       typesetPromise?: (elements?: Array<HTMLElement | null>) => Promise<void>;
     };
   }
@@ -30,13 +34,43 @@ const DisciplineWiki: React.FC = () => {
   }, [resolvedActiveSubtopic?.id, disciplineId]);
 
   useEffect(() => {
-    // Small delay to allow React to render the content before MathJax processes it
-    const timer = setTimeout(() => {
-      if (window.MathJax && window.MathJax.typesetPromise) {
-        window.MathJax.typesetPromise([contentRef.current]).catch((err: unknown) => console.log('MathJax error:', err));
+    let cancelled = false;
+    const script = document.getElementById('MathJax-script') as HTMLScriptElement | null;
+
+    const typesetMath = async () => {
+      const mathRoot = contentRef.current;
+      const mathJax = window.MathJax;
+
+      if (!mathRoot || !mathJax?.typesetPromise) {
+        return;
       }
-    }, 100);
-    return () => clearTimeout(timer);
+
+      try {
+        await mathJax.startup?.promise;
+        if (cancelled) {
+          return;
+        }
+        mathJax.typesetClear?.([mathRoot]);
+        await mathJax.typesetPromise([mathRoot]);
+      } catch (err: unknown) {
+        console.log('MathJax error:', err);
+      }
+    };
+
+    const handleScriptLoad = () => {
+      void typesetMath();
+    };
+
+    if (window.MathJax?.typesetPromise) {
+      void typesetMath();
+    } else if (script) {
+      script.addEventListener('load', handleScriptLoad, { once: true });
+    }
+
+    return () => {
+      cancelled = true;
+      script?.removeEventListener('load', handleScriptLoad);
+    };
   }, [disciplineId, activeSubtopicId]);
 
   if (!discipline) {
@@ -99,7 +133,7 @@ const DisciplineWiki: React.FC = () => {
                   }}
                   className={`w-full text-left px-4 py-3.5 rounded-xl transition-all duration-300 flex items-center gap-3 group ${
                     activeSubtopicId === subtopic.id
-                      ? 'bg-accent-cyan/10 text-accent-cyan border border-accent-cyan/20 shadow-[inset_0_0_20px_rgba(0,240,255,0.05)]'
+                      ? 'sidebar-nav-active text-accent-cyan shadow-[inset_0_0_20px_rgba(0,240,255,0.05)]'
                       : 'text-white/30 hover:bg-white/5 hover:text-white/80 border border-transparent'
                   }`}
                 >
@@ -175,29 +209,29 @@ const DisciplineWiki: React.FC = () => {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <div className="flex items-center gap-4 mb-10">
-                      <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-xl bg-accent-cyan/5 border border-accent-cyan/20 text-accent-cyan font-serif italic text-2xl shadow-[0_0_20px_rgba(0,240,255,0.05)]">
+                    <div className="flex items-center gap-3 mb-8">
+                      <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-accent-cyan/10 border border-accent-cyan/30 text-accent-cyan font-serif italic text-xl shadow-[0_0_15px_rgba(0,240,255,0.1)]">
                         §
                       </div>
-                      <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tighter leading-none">
+                      <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none">
                         {activeSubtopic.title}
                       </h2>
-                      <div className="h-[1px] flex-1 bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
+                      <div className="h-[0.5px] flex-1 bg-gradient-to-r from-accent-cyan/20 via-white/5 to-transparent" />
                     </div>
                     
                     <div
                       ref={contentRef}
                       className="prose prose-invert prose-sm sm:prose-base max-w-none
                         prose-headings:text-white prose-headings:font-bold prose-headings:tracking-tight
-                        prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:text-accent-cyan/90
-                        prose-h3:text-lg prose-h3:mt-5 prose-h3:mb-2 prose-h3:text-white/90
-                        prose-p:leading-[1.6] prose-p:mb-4 prose-p:text-white/70 prose-p:font-normal
-                        prose-ul:list-none prose-ul:pl-0 prose-ul:space-y-2 prose-ul:mb-5
-                        prose-li:relative prose-li:pl-7 prose-li:text-white/60
-                        prose-li:before:content-[''] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-[0.7em] prose-li:before:w-1.5 prose-li:before:h-[1.5px] prose-li:before:bg-accent-cyan/40 prose-li:before:rounded-full
-                        prose-strong:text-white prose-strong:font-semibold
-                        prose-img:rounded-2xl prose-img:border prose-img:border-white/10
-                        prose-code:text-accent-cyan prose-code:bg-accent-cyan/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none"
+                        prose-h2:text-lg prose-h2:mt-6 prose-h2:mb-2 prose-h2:text-accent-cyan/90
+                        prose-h3:text-base prose-h3:mt-4 prose-h3:mb-1.5 prose-h3:text-white/90
+                        prose-p:leading-[1.7] prose-p:mb-3 prose-p:text-white/75 prose-p:font-normal
+                        prose-ul:list-none prose-ul:pl-0 prose-ul:space-y-1.5 prose-ul:mb-4
+                        prose-li:relative prose-li:pl-6 prose-li:text-white/60
+                        prose-li:before:content-[''] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-[0.7em] prose-li:before:w-1.2 prose-li:before:h-[1.2px] prose-li:before:bg-accent-cyan/50 prose-li:before:rounded-full
+                        prose-strong:text-white prose-strong:font-bold
+                        prose-img:rounded-xl prose-img:border prose-img:border-white/10
+                        prose-code:text-accent-cyan prose-code:bg-accent-cyan/10 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none"
 
                       dangerouslySetInnerHTML={{ __html: activeSubtopic.content }}
                     />

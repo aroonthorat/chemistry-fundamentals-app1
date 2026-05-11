@@ -10,7 +10,7 @@ const PeriodicTablePage: React.FC = () => {
   const [selectedElement, setSelectedElement] = useState<Element | null>(null);
 
   return (
-    <div className="main-content min-h-screen pb-24 relative overflow-hidden">
+    <div className="main-content min-h-screen pb-24 relative">
       {/* Background Decor */}
       <div className="orb orb-1 opacity-10 top-[10%] left-[5%] w-[500px] h-[500px] pointer-events-none"></div>
       <div className="orb orb-2 opacity-5 bottom-[5%] right-[5%] w-[400px] h-[400px] pointer-events-none"></div>
