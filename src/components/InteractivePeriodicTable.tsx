@@ -24,7 +24,7 @@ const ElementCard: React.FC<{
   trendType: string;
   onHover: (el: Element | null) => void;
   onClick: (el: Element) => void;
-}> = ({ element, isFiltered, color, trendValue, trendType, onHover, onClick }) => {
+}> = React.memo(({ element, isFiltered, color, trendValue, trendType, onHover, onClick }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -175,10 +175,29 @@ const ElementCard: React.FC<{
       )}
     </motion.div>
   );
-};
+});
+ElementCard.displayName = 'ElementCard';
 
-const HUDPopup: React.FC<{ element: Element; mousePos: { x: number, y: number } }> = ({ element, mousePos }) => {
+// Keep a lightweight global coordinates object for initial rendering of HUDPopup
+const mouseGlobal = { x: 0, y: 0 };
+if (typeof window !== 'undefined') {
+  window.addEventListener('mousemove', (e) => {
+    mouseGlobal.x = e.clientX;
+    mouseGlobal.y = e.clientY;
+  });
+}
+
+const HUDPopup: React.FC<{ element: Element }> = ({ element }) => {
+  const [mousePos, setMousePos] = useState(() => ({ x: mouseGlobal.x, y: mouseGlobal.y }));
   const color = CATEGORIES.find(c => element.category.includes(c.id))?.color || '#fff';
+
+  useEffect(() => {
+    const handleMouseMoveHUD = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMoveHUD);
+    return () => window.removeEventListener('mousemove', handleMouseMoveHUD);
+  }, []);
 
   return (
     <motion.div
@@ -269,19 +288,10 @@ const InteractivePeriodicTable: React.FC<InteractivePeriodicTableProps> = ({
   const [hoveredElement, setHoveredElement] = useState<Element | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [currentTrend, setCurrentTrend] = useState<TrendType>('none');
   const containerRef = useRef<HTMLDivElement>(null);
 
   const elements = elementsData.elements as Element[];
-
-  useEffect(() => {
-    const handleMouseMoveGlobal = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMoveGlobal);
-    return () => window.removeEventListener('mousemove', handleMouseMoveGlobal);
-  }, []);
 
   const filteredElements = useMemo(() => {
     return elements.filter(el => {
@@ -407,7 +417,7 @@ const InteractivePeriodicTable: React.FC<InteractivePeriodicTableProps> = ({
 
       <AnimatePresence>
         {hoveredElement && (
-          <HUDPopup element={hoveredElement} mousePos={mousePos} />
+          <HUDPopup element={hoveredElement} />
         )}
       </AnimatePresence>
     </div>

@@ -13,7 +13,7 @@ const ACID_TYPES = [
 ];
 
 const PremiumLayout = () => {
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(true);
   const [showAd, setShowAd] = useState(false);
   const [adProgress, setAdProgress] = useState(0);
   const [activeAcid, setActiveAcid] = useState(ACID_TYPES[0]);

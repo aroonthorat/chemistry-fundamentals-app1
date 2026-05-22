@@ -1,8 +1,7 @@
 import { useState, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
-import { Link } from 'react-router-dom';
-import { Atom, ArrowLeft, Info, Settings2, Hand } from 'lucide-react';
+import { Info, Settings2, Hand } from 'lucide-react';
 import * as THREE from 'three';
 
 // --- 3D Models ---
@@ -176,18 +175,7 @@ export default function AtomicLab() {
     const CurrentModel = models[activeModel].comp;
 
     return (
-        <div style={{ height: '100vh', width: '100vw', display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: 'var(--bg-color)', color: 'white' }}>
-
-            {/* Navbar Minimal */}
-            <header style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', backdropFilter: 'blur(10px)', zIndex: 100, background: 'rgba(5, 5, 5, 0.7)' }}>
-                <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'white', textDecoration: 'none', fontWeight: 600 }}>
-                    <ArrowLeft size={20} /> Back to Home
-                </Link>
-                <div className="logo" style={{ fontSize: '1.2rem' }}>
-                    <Atom className="logo-icon" size={24} color="var(--accent-cyan)" /> Atomic <span className="text-gradient">3D Lab</span>
-                </div>
-                <div style={{ width: '100px' }}></div>
-            </header>
+        <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: 'transparent', color: 'white' }}>
 
             {/* Main Content Split */}
             <div style={{ display: 'flex', flex: 1, position: 'relative' }}>

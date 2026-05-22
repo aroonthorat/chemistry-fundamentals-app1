@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { ArrowLeft, Beaker, FlaskConical, Thermometer, Zap, Activity, Filter, BoxSelect } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -1369,18 +1368,7 @@ export default function ChemicalLab() {
     const activeReactionData = allReactions[activeTab] || allReactions[0];
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-color)', color: 'white' }}>
-
-            {/* Header */}
-            <header style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', background: 'rgba(5, 5, 5, 0.8)' }}>
-                <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'white', textDecoration: 'none', fontWeight: 600 }}>
-                    <ArrowLeft size={20} /> Home
-                </Link>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.2rem', fontWeight: 700 }}>
-                    <FlaskConical color="var(--accent-pink)" /> Virtual <span className="text-gradient">Chemical Lab</span>
-                </div>
-                <div style={{ width: '100px' }}></div>
-            </header>
+        <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', backgroundColor: 'transparent', color: 'white' }}>
 
             {/* Main Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', flex: 1, overflow: 'hidden' }}>
