@@ -56,3 +56,13 @@ This file is the shared handoff log for Codex and Google Antigravity while we wo
 - Added `sidebar-nav-active` class in `index.css` with a subtle glow for better navigation contrast in the sidebar.
 - Expanded `src/data/disciplineNotes.ts` with comprehensive high-yield notes for JEE/NEET, including new subtopics: Solid State, Solutions, Isomerism, Haloalkanes, and p-Block Elements.
 - Verified that the layout feels more premium and balanced on wide screens.
+
+### 2026-05-24
+
+- Antigravity completed a comprehensive codebase health and ESLint cleanup.
+- Deleted orphan `src/components/reactions/` directory containing duplicate files causing TypeScript and linter errors.
+- Refactored `AcidicBackground.tsx` to use `useRef` for WebGL shader uniforms and standardized ref initialization checks to avoid react-hooks/refs violations.
+- Refactored `AtomicLab.tsx` and `ChemicalLab.tsx` to move coordinate and bubble offset generations to the module scope and memoization, fully resolving React render purity issues (`Math.random()` inside render passes).
+- Cleaned up parameter typings in reaction widgets to remove explicit `any` and addressed styling constraints inside `AcidReactions.tsx`.
+- Verified 100% clean linter execution with `npm run lint` and a successful production build with `npm run build`.
+

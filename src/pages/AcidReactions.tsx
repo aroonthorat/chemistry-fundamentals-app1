@@ -282,7 +282,7 @@ const AcidReactions = () => {
     // Handle Bubbles (hydrogen/nitrogen oxides)
     setBubbles(prev => {
       // Filter out bubbles that rose beyond top of liquid (y < 40)
-      let updated = prev.map(b => ({
+      const updated = prev.map(b => ({
         ...b,
         y: b.y - b.speed,
         opacity: b.y < 80 ? (b.y - 40) / 40 : b.opacity
@@ -309,7 +309,7 @@ const AcidReactions = () => {
     // Handle sparks/explosive particles for extremely active metals (K, Na)
     if (['k', 'na'].includes(activeMetal.id) && dissolvedPct < 98) {
       setSparks(prev => {
-        let updated = prev.map(s => ({
+        const updated = prev.map(s => ({
           ...s,
           x: s.x + s.vx,
           y: s.y + s.vy,
@@ -348,6 +348,7 @@ const AcidReactions = () => {
     return () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReacting, isCompleted, reactionRate]);
 
   // Restart / Dropping handlers

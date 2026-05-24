@@ -68,7 +68,14 @@ const RutherfordModel = () => {
     );
 };
 
-const OrbitingElectron = ({ radius, speed, color, startAngle = 0 }: any) => {
+interface OrbitingElectronProps {
+    radius: number;
+    speed: number;
+    color: string;
+    startAngle?: number;
+}
+
+const OrbitingElectron = ({ radius, speed, color, startAngle = 0 }: OrbitingElectronProps) => {
     const ref = useRef<THREE.Mesh>(null);
     useFrame(({ clock }) => {
         if (ref.current) {
@@ -127,21 +134,23 @@ const BohrModel = ({ activeShell }: { activeShell: number | null }) => {
     );
 };
 
-const QuantumCloud = () => {
-    const count = 10000;
-    const positions = new Float32Array(count * 3);
-
-    for (let i = 0; i < count; i++) {
+const QUANTUM_COUNT = 10000;
+const QUANTUM_POSITIONS = (() => {
+    const arr = new Float32Array(QUANTUM_COUNT * 3);
+    for (let i = 0; i < QUANTUM_COUNT; i++) {
         // 1s/2s approximation cloud
-        let r = Math.random() * 3.5 * Math.random(); // Dense at center
+        const r = Math.random() * 3.5 * Math.random(); // Dense at center
         const theta = Math.random() * 2 * Math.PI;
         const phi = Math.acos(2 * Math.random() - 1);
 
-        positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-        positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-        positions[i * 3 + 2] = r * Math.cos(phi);
+        arr[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+        arr[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+        arr[i * 3 + 2] = r * Math.cos(phi);
     }
+    return arr;
+})();
 
+const QuantumCloud = () => {
     return (
         <group>
             <mesh>
@@ -150,7 +159,7 @@ const QuantumCloud = () => {
             </mesh>
             <points>
                 <bufferGeometry>
-                    <bufferAttribute attach="attributes-position" count={count} args={[positions, 3]} />
+                    <bufferAttribute attach="attributes-position" count={QUANTUM_COUNT} args={[QUANTUM_POSITIONS, 3]} />
                 </bufferGeometry>
                 <pointsMaterial size={0.04} color="#00f0ff" transparent opacity={0.4} sizeAttenuation depthWrite={false} blending={THREE.AdditiveBlending} />
             </points>

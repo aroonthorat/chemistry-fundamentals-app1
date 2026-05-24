@@ -102,25 +102,38 @@ const AcidicBackground: React.FC<AcidicBackgroundProps> = ({
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const { size, viewport } = useThree();
 
-  const uniforms = useMemo(
-    () => ({
+  const uniformsRef = useRef<{
+    u_time: { value: number };
+    u_resolution: { value: THREE.Vector2 };
+    u_mouse: { value: THREE.Vector2 };
+    u_color: { value: THREE.Color };
+    u_metal_intensity: { value: number };
+    u_metal_color: { value: THREE.Color };
+  } | null>(null);
+
+  if (uniformsRef.current == null) {
+    uniformsRef.current = {
       u_time: { value: 0 },
       u_resolution: { value: new THREE.Vector2(size.width, size.height) },
       u_mouse: { value: new THREE.Vector2(0, 0) },
       u_color: { value: new THREE.Color(color) },
       u_metal_intensity: { value: metalIntensity },
       u_metal_color: { value: new THREE.Color(metalColor) },
-    }),
-    [size] // Only re-create on size change
-  );
+    };
+  }
+  // eslint-disable-next-line react-hooks/refs
+  const uniforms = uniformsRef.current;
+
+  // Update uniforms when size changes
+  useEffect(() => {
+    uniforms.u_resolution.value.set(size.width, size.height);
+  }, [size, uniforms]);
 
   // Update uniforms when props change
   useEffect(() => {
-    if (uniforms.u_color) {
-      uniforms.u_color.value.set(color);
-      uniforms.u_metal_intensity.value = metalIntensity;
-      uniforms.u_metal_color.value.set(metalColor);
-    }
+    uniforms.u_color.value.set(color);
+    uniforms.u_metal_intensity.value = metalIntensity;
+    uniforms.u_metal_color.value.set(metalColor);
   }, [color, metalIntensity, metalColor, uniforms]);
 
   const targetMouse = useMemo(() => new THREE.Vector2(), []);

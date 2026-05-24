@@ -2,8 +2,63 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Beaker, FlaskConical, Thermometer, Zap, Activity, Filter, BoxSelect } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface GlassBeakerProps {
+    color: string;
+    liquidHeight?: number;
+    hasSolid?: boolean;
+    solidColor?: string;
+    solidOpacity?: number;
+}
+
+interface GenericDropReactionProps {
+    solidName: string;
+    solidStartColor: string;
+    solidEndColor: string;
+    liquidStartColor: string;
+    liquidEndColor: string;
+    liquidStartName: string;
+    liquidEndName: string;
+    equation: string;
+    description: string;
+    reactionSpeed?: number;
+    hasBubbles?: boolean;
+    dissolveSolid?: boolean;
+}
+
+interface GenericMixReactionProps {
+    liquid1Name: string;
+    liquid1Color: string;
+    liquid2Name: string;
+    liquid2Color: string;
+    resultName: string;
+    resultColor: string;
+    hasPpt?: boolean;
+    pptColor?: string;
+    equation: string;
+    description: string;
+}
+
+// Pre-generated static values to keep renders pure and satisfy react-hooks/purity
+const PEROXIDE_BUBBLES = Array.from({ length: 8 }).map((_, i) => ({
+    id: i,
+    xEndStart: (i * 17) % 40 - 20,
+    xEndFinish: (i * 29) % 40 - 20,
+    delay: (i * 0.15) % 0.8,
+}));
+
+const RUST_PATCHES = Array.from({ length: 15 }).map((_, i) => ({
+    top: `${((i * 17) % 90) + 5}%`,
+    left: `${((i * 13) % 8) - 4}px`,
+}));
+
+const THERMITE_SPARKS = Array.from({ length: 20 }).map((_, i) => ({
+    id: i,
+    xEnd: ((i * 37) % 200) - 100,
+    yEnd: ((i * 53) % 200) - 100,
+}));
+
 // Basic Lab Equipment Icons/Components
-const GlassBeaker = ({ color, liquidHeight = 50, hasSolid = false, solidColor = "#9ba1a6", solidOpacity = 1 }: any) => (
+const GlassBeaker = ({ color, liquidHeight = 50, hasSolid = false, solidColor = "#9ba1a6", solidOpacity = 1 }: GlassBeakerProps) => (
     <div style={{ position: 'relative', width: '120px', height: '150px', margin: '0 auto' }}>
         {/* Liquid */}
         <motion.div
@@ -316,7 +371,7 @@ const MagnesiumCombustion = () => {
                     {!burnt ? (
                         <motion.div
                             animate={ignite ? { opacity: [1, 0.8, 1], filter: ['brightness(1)', 'brightness(10)', 'brightness(1)'] } : {}}
-                            transition={ignite ? { repeat: Infinity, duration: 0.1 } as any : {}}
+                            transition={ignite ? { repeat: Infinity, duration: 0.1 } : {}}
                             style={{ width: '150px', height: '15px', background: '#d3d3d3', border: '1px solid #777', borderRadius: '2px', alignSelf: 'center', boxShadow: ignite ? '0 0 20px white' : 'none' }}
                         />
                     ) : (
@@ -381,7 +436,7 @@ const DecompositionReaction = () => {
                             <motion.div
                                 initial={{ opacity: 0, y: 0 }}
                                 animate={{ opacity: [0, 1, 0], y: -150 }}
-                                transition={{ repeat: Infinity, duration: 1 } as any}
+                                transition={{ repeat: Infinity, duration: 1 }}
                                 style={{ position: 'absolute', top: '50%', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 'bold' }}
                             >
                                 ↑ CO₂
@@ -391,7 +446,7 @@ const DecompositionReaction = () => {
                             <motion.div
                                 initial={{ opacity: 0, y: 0 }}
                                 animate={{ opacity: [0, 1, 0], y: -160 }}
-                                transition={{ repeat: Infinity, duration: 1.2, delay: 0.2 } as any}
+                                transition={{ repeat: Infinity, duration: 1.2, delay: 0.2 }}
                                 style={{ position: 'absolute', top: '30%', color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 'bold' }}
                             >
                                 ↑ CO₂
@@ -414,7 +469,7 @@ const DecompositionReaction = () => {
                     <div style={{ width: '30px', height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', marginBottom: '-5px', zIndex: 4 }}>
                         <motion.div
                             animate={{ height: `${flameHeight}px` }}
-                            transition={{ type: 'spring', bounce: 0.2 } as any}
+                            transition={{ type: 'spring', bounce: 0.2 }}
                             style={{ width: '100%', background: 'linear-gradient(to top, rgba(0, 100, 255, 0.8), rgba(0, 200, 255, 0.4), transparent)', borderRadius: '50% 50% 20% 20%', filter: 'blur(2px)' }}
                         >
                             {/* Inner cone */}
@@ -456,7 +511,7 @@ const DecompositionReaction = () => {
     );
 };
 // Generic Drop Reaction (Metal + Solution)
-const GenericDropReaction = ({ solidName, solidStartColor, solidEndColor, liquidStartColor, liquidEndColor, liquidStartName, liquidEndName, equation, description, reactionSpeed = 2, hasBubbles = false, dissolveSolid = false }: any) => {
+const GenericDropReaction = ({ solidName, solidStartColor, solidEndColor, liquidStartColor, liquidEndColor, liquidStartName, liquidEndName, equation, description, reactionSpeed = 2, hasBubbles = false, dissolveSolid = false }: GenericDropReactionProps) => {
     const [dropped, setDropped] = useState(false);
     const [progress, setProgress] = useState(0);
 
@@ -494,8 +549,8 @@ const GenericDropReaction = ({ solidName, solidStartColor, solidEndColor, liquid
                     />
                     {dropped && hasBubbles && progress < 100 && (
                         <div style={{ position: 'absolute', bottom: '30px', left: '50%', transform: 'translateX(-50%)', pointerEvents: 'none' }}>
-                            <motion.div animate={{ y: [0, -60], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.5 } as any} style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)' }} />
-                            <motion.div animate={{ y: [0, -70], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 } as any} style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', marginLeft: '10px' }} />
+                            <motion.div animate={{ y: [0, -60], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)' }} />
+                            <motion.div animate={{ y: [0, -70], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(255,255,255,0.8)', marginLeft: '10px' }} />
                         </div>
                     )}
                 </div>
@@ -514,7 +569,7 @@ const GenericDropReaction = ({ solidName, solidStartColor, solidEndColor, liquid
 };
 
 // Generic Mix Reaction (Two Liquids pouring into one)
-const GenericMixReaction = ({ liquid1Name, liquid1Color, liquid2Name, liquid2Color, resultName, resultColor, hasPpt, pptColor, equation, description }: any) => {
+const GenericMixReaction = ({ liquid1Name, liquid1Color, liquid2Name, liquid2Color, resultName, resultColor, hasPpt, pptColor, equation, description }: GenericMixReactionProps) => {
     const [mixed, setMixed] = useState(false);
 
     return (
@@ -585,7 +640,7 @@ const SlakingOfLime = () => {
                     {added && temp > 40 && (
                         <motion.div
                             animate={{ opacity: [0.1, 0.3, 0.1], y: [-20, -60] }}
-                            transition={{ repeat: Infinity, duration: 2 } as any}
+                            transition={{ repeat: Infinity, duration: 2 }}
                             style={{ position: 'absolute', top: '20%', left: '20%', right: '20%', height: '40px', background: 'rgba(255,255,255,0.2)', filter: 'blur(10px)', borderRadius: '50%' }}
                         />
                     )}
@@ -637,11 +692,11 @@ const PeroxideDecomposition = () => {
                     <GlassBeaker color="rgba(255,255,255,0.1)" liquidHeight={50} />
                     {added && progress < 100 && (
                         <div style={{ position: 'absolute', bottom: '20px', left: '0', right: '0', pointerEvents: 'none' }}>
-                            {Array.from({ length: 8 }).map((_, i) => (
+                            {PEROXIDE_BUBBLES.map((bubble) => (
                                 <motion.div
-                                    key={i}
-                                    animate={{ y: [0, -100], opacity: [0, 1, 0], x: [Math.random() * 40 - 20, Math.random() * 40 - 20] }}
-                                    transition={{ repeat: Infinity, duration: 0.8, delay: Math.random() } as any}
+                                    key={bubble.id}
+                                    animate={{ y: [0, -100], opacity: [0, 1, 0], x: [bubble.xEndStart, bubble.xEndFinish] }}
+                                    transition={{ repeat: Infinity, duration: 0.8, delay: bubble.delay }}
                                     style={{ position: 'absolute', left: '50%', width: '8px', height: '8px', borderRadius: '50%', background: 'rgba(255,255,255,0.6)' }}
                                 />
                             ))}
@@ -680,13 +735,13 @@ const IronRusting = () => {
                         {/* Nail Head */}
                         <div style={{ position: 'absolute', top: '-5px', left: '-5px', width: '20px', height: '5px', background: nailColor, borderRadius: '2px' }} />
                         {/* Rust Patches */}
-                        {days > 5 && Array.from({ length: Math.floor(days / 2) }).map((_, i) => (
+                        {days > 5 && RUST_PATCHES.slice(0, Math.floor(days / 2)).map((patch, i) => (
                             <div
                                 key={i}
                                 style={{
                                     position: 'absolute',
-                                    top: `${Math.random() * 100}%`,
-                                    left: `${Math.random() * 8 - 4}px`,
+                                    top: patch.top,
+                                    left: patch.left,
                                     width: '6px',
                                     height: '6px',
                                     background: '#b7410e',
@@ -727,13 +782,13 @@ const CandleFlame = () => {
                         {/* Outer Zone (Non-luminous) */}
                         <motion.div
                             animate={{ scale: [1, 1.05, 1], opacity: [0.7, 0.8, 0.7] }}
-                            transition={{ repeat: Infinity, duration: 0.5 } as any}
+                            transition={{ repeat: Infinity, duration: 0.5 }}
                             style={{ width: '40px', height: '80px', background: 'rgba(0,100,255,0.3)', borderRadius: '50% 50% 20% 20%', filter: 'blur(4px)', position: 'absolute', bottom: 0, left: '-20px' }}
                         />
                         {/* Middle Zone (Luminous) */}
                         <motion.div
                             animate={{ scale: [1, 1.1, 1] }}
-                            transition={{ repeat: Infinity, duration: 0.4 } as any}
+                            transition={{ repeat: Infinity, duration: 0.4 }}
                             style={{ width: '30px', height: '60px', background: 'linear-gradient(to top, #ffaa00, #ffff00)', borderRadius: '50% 50% 20% 20%', position: 'absolute', bottom: '5px', left: '-15px', zIndex: 2 }}
                         />
                         {/* Inner Zone (Dark) */}
@@ -786,7 +841,7 @@ const Esterification = () => {
                     {temp > 60 && progress < 100 && (
                         <motion.div
                             animate={{ y: [0, -40], opacity: [0, 0.5, 0] }}
-                            transition={{ repeat: Infinity, duration: 1.5 } as any}
+                            transition={{ repeat: Infinity, duration: 1.5 }}
                             style={{ position: 'absolute', top: '30%', left: '40%', right: '40%', height: '10px', background: 'rgba(255,255,255,0.2)', filter: 'blur(5px)' }}
                         />
                     )}
@@ -862,7 +917,7 @@ const AmmoniaHClGas = () => {
                     <div style={{ position: 'absolute', top: '-10px', left: '5px', width: '20px', height: '10px', background: '#555', borderRadius: '50%' }} />
                     <div style={{ position: 'absolute', bottom: '10px', width: '100%', textAlign: 'center', fontSize: '0.7rem' }}>NH₃</div>
                     {open && (
-                        <motion.div animate={{ x: [0, 50], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 2 } as any} style={{ position: 'absolute', top: '20%', right: '-20px', color: 'white', fontSize: '1.2rem' }}>💨</motion.div>
+                        <motion.div animate={{ x: [0, 50], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 2 }} style={{ position: 'absolute', top: '20%', right: '-20px', color: 'white', fontSize: '1.2rem' }}>💨</motion.div>
                     )}
                 </div>
                 <div style={{ height: '100px', display: 'flex', alignItems: 'center' }}>
@@ -874,7 +929,7 @@ const AmmoniaHClGas = () => {
                     <div style={{ position: 'absolute', top: '-10px', left: '5px', width: '20px', height: '10px', background: '#555', borderRadius: '50%' }} />
                     <div style={{ position: 'absolute', bottom: '10px', width: '100%', textAlign: 'center', fontSize: '0.7rem' }}>HCl</div>
                     {open && (
-                        <motion.div animate={{ x: [0, -50], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 2 } as any} style={{ position: 'absolute', top: '20%', left: '-20px', color: 'white', fontSize: '1.2rem' }}>💨</motion.div>
+                        <motion.div animate={{ x: [0, -50], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 2 }} style={{ position: 'absolute', top: '20%', left: '-20px', color: 'white', fontSize: '1.2rem' }}>💨</motion.div>
                     )}
                 </div>
             </div>
@@ -927,7 +982,7 @@ const EthanolBurning = () => {
                     {ignited && (
                         <motion.div
                             animate={{ y: [-10, -15, -10], opacity: [0.7, 0.9, 0.7] }}
-                            transition={{ repeat: Infinity, duration: 0.6 } as any}
+                            transition={{ repeat: Infinity, duration: 0.6 }}
                             style={{ position: 'absolute', bottom: '10px', left: '10%', right: '10%', height: '80px', background: 'linear-gradient(to top, rgba(255,100,0,0.6), rgba(255,200,0,0.2), transparent)', borderRadius: '50% 50% 0 0', filter: 'blur(4px)' }}
                         />
                     )}
@@ -963,18 +1018,18 @@ const ThermiteReaction = () => {
                 <div style={{ position: 'relative', width: '80px', height: '100px', border: '4px solid #555', borderTop: 'none', borderRadius: '0 0 10px 10px', background: complete ? 'rgba(255,100,0,0.2)' : 'rgba(255,255,255,0.05)' }}>
                     {ignited && (
                         <div style={{ position: 'absolute', top: '-50px', left: '-10px', width: '100px', height: '100px' }}>
-                            {Array.from({ length: 20 }).map((_, i) => (
+                            {THERMITE_SPARKS.map((spark) => (
                                 <motion.div
-                                    key={i}
-                                    animate={{ x: [0, Math.random() * 200 - 100], y: [0, Math.random() * 200 - 100], opacity: [1, 0] }}
-                                    transition={{ repeat: Infinity, duration: 0.5 } as any}
+                                    key={spark.id}
+                                    animate={{ x: [0, spark.xEnd], y: [0, spark.yEnd], opacity: [1, 0] }}
+                                    transition={{ repeat: Infinity, duration: 0.5 }}
                                     style={{ position: 'absolute', left: '50%', top: '50%', width: '4px', height: '4px', background: '#fff', borderRadius: '50%', boxShadow: '0 0 10px #ffaa00' }}
                                 />
                             ))}
                         </div>
                     )}
                     <div style={{ position: 'absolute', bottom: '10px', left: '10px', right: '10px', height: '30px', background: complete ? '#555' : '#8b4513', borderRadius: '4px' }}>
-                        {complete && <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 1 } as any} style={{ width: '100%', height: '100%', background: 'radial-gradient(circle, #ff4400, transparent)', borderRadius: '4px' }} />}
+                        {complete && <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 1 }} style={{ width: '100%', height: '100%', background: 'radial-gradient(circle, #ff4400, transparent)', borderRadius: '4px' }} />}
                     </div>
                 </div>
             </div>
@@ -1001,7 +1056,7 @@ const CopperOxideHydrogen = () => {
                 <div style={{ position: 'relative', width: '150px', height: '30px', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '15px' }}>
                     <div style={{ position: 'absolute', left: '10px', right: '10px', top: '5px', bottom: '5px', background: progress === 100 ? '#b87333' : '#1a1a1a', borderRadius: '10px', transition: 'background 2s' }} />
                     {gas && (
-                        <motion.div animate={{ x: [-20, 170], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 2 } as any} style={{ position: 'absolute', top: '50%', left: '-10px', color: 'white' }}>💨</motion.div>
+                        <motion.div animate={{ x: [-20, 170], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 2 }} style={{ position: 'absolute', top: '50%', left: '-10px', color: 'white' }}>💨</motion.div>
                     )}
                 </div>
             </div>
@@ -1033,7 +1088,7 @@ const AmmoniumChlorideNaOH = () => {
                     <div style={{ position: 'absolute', top: '-40px', width: '100%', textAlign: 'center', fontWeight: 'bold' }}>NaOH (aq)</div>
                     <GlassBeaker color="rgba(255,255,255,0.1)" liquidHeight={50} />
                     {added && (
-                        <motion.div animate={{ y: [0, -100], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5 } as any} style={{ position: 'absolute', top: '20%', left: '50%', color: 'white', fontSize: '1.2rem' }}>💨</motion.div>
+                        <motion.div animate={{ y: [0, -100], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5 }} style={{ position: 'absolute', top: '20%', left: '50%', color: 'white', fontSize: '1.2rem' }}>💨</motion.div>
                     )}
                 </div>
                 {!added && (
@@ -1135,13 +1190,13 @@ const SN1_SN2_Comparison = () => {
                 {/* Nucleophile */}
                 <motion.div
                     animate={playing ? (mode === 'SN1' ? { x: [100, 20], opacity: [0, 1] } : { x: [-100, -20], opacity: [0, 1] }) : { x: mode === 'SN1' ? 100 : -100, opacity: 0 }}
-                    transition={{ delay: mode === 'SN1' ? 1 : 0, duration: 1 } as any}
+                    transition={{ delay: mode === 'SN1' ? 1 : 0, duration: 1 }}
                     style={{ position: 'absolute', width: '30px', height: '30px', background: 'var(--accent-cyan)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', fontSize: '0.7rem' }}>Nu⁻</motion.div>
                 
                 {/* Leaving Group */}
                 <motion.div
                     animate={playing ? (mode === 'SN1' ? { x: [-20, -100], opacity: [1, 0] } : { x: [20, 100], opacity: [1, 0] }) : { x: mode === 'SN1' ? -20 : 20, opacity: 1 }}
-                    transition={{ duration: 1 } as any}
+                    transition={{ duration: 1 }}
                     style={{ position: 'absolute', width: '30px', height: '30px', background: 'var(--accent-pink)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '0.7rem' }}>L</motion.div>
             </div>
             <button onClick={() => { setPlaying(false); setTimeout(() => setPlaying(true), 100); }} style={{ marginTop: '20px', padding: '10px 20px', borderRadius: '8px', border: 'none', background: 'white', color: 'black', fontWeight: 'bold', cursor: 'pointer' }}>Play Animation</button>
@@ -1222,7 +1277,7 @@ const ElectrochemicalCell = () => {
                             initial={{ pathLength: 0 }}
                             animate={{ pathLength: 1 }}
                         />
-                        <motion.circle r="3" fill="yellow" animate={{ offsetDistance: ["0%", "100%"] }} transition={{ repeat: Infinity, duration: 1.5 } as any} style={{ offsetPath: "path('M 40,30 L 90,0 L 140,30')" }} />
+                        <motion.circle r="3" fill="yellow" animate={{ offsetDistance: ["0%", "100%"] }} transition={{ repeat: Infinity, duration: 1.5 }} style={{ offsetPath: "path('M 40,30 L 90,0 L 140,30')" }} />
                     </svg>
                 )}
             </div>
@@ -1250,7 +1305,7 @@ const ElectrolysisLab = () => {
                     {/* Anode (O2) */}
                     <div style={{ position: 'relative', width: '30px', height: '120px', border: '2px solid rgba(255,255,255,0.4)', borderBottom: 'none', borderRadius: '15px 15px 0 0', background: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
                         {bubbling && (
-                            <motion.div animate={{ y: [0, -130], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.2 } as any} style={{ position: 'absolute', bottom: '10px', left: '10px', width: '8px', height: '8px', borderRadius: '50%', background: 'white' }} />
+                            <motion.div animate={{ y: [0, -130], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.2 }} style={{ position: 'absolute', bottom: '10px', left: '10px', width: '8px', height: '8px', borderRadius: '50%', background: 'white' }} />
                         )}
                         <div style={{ position: 'absolute', bottom: '-20px', width: '10px', height: '40px', background: '#333', left: '10px' }} /> {/* Electrode */}
                         <div style={{ position: 'absolute', top: '10px', width: '100%', textAlign: 'center', fontSize: '0.8rem', fontWeight: 'bold', textShadow: '0 0 5px black' }}>O₂</div>
@@ -1259,8 +1314,8 @@ const ElectrolysisLab = () => {
                     <div style={{ position: 'relative', width: '30px', height: '120px', border: '2px solid rgba(255,255,255,0.4)', borderBottom: 'none', borderRadius: '15px 15px 0 0', background: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
                         {bubbling && (
                             <>
-                                <motion.div animate={{ y: [0, -130], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.6 } as any} style={{ position: 'absolute', bottom: '10px', left: '5px', width: '6px', height: '6px', borderRadius: '50%', background: 'white' }} />
-                                <motion.div animate={{ y: [0, -130], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.7, delay: 0.3 } as any} style={{ position: 'absolute', bottom: '15px', left: '15px', width: '6px', height: '6px', borderRadius: '50%', background: 'white' }} />
+                                <motion.div animate={{ y: [0, -130], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.6 }} style={{ position: 'absolute', bottom: '10px', left: '5px', width: '6px', height: '6px', borderRadius: '50%', background: 'white' }} />
+                                <motion.div animate={{ y: [0, -130], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.7, delay: 0.3 }} style={{ position: 'absolute', bottom: '15px', left: '15px', width: '6px', height: '6px', borderRadius: '50%', background: 'white' }} />
                             </>
                         )}
                         <div style={{ position: 'absolute', bottom: '-20px', width: '10px', height: '40px', background: '#333', left: '10px' }} />
