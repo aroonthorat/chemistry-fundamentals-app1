@@ -49,16 +49,16 @@ interface MetalType {
 }
 
 const METALS: MetalType[] = [
-  { id: 'k', symbol: 'K', name: 'Potassium', reactivity: 1.0, color: '#e0c3fc', desc: 'Reacts explosively with dilute acids. Instantly ignites producing violent purple/lilac flames and thermal shocks.', danger: 'Critical', flameColor: '#d666ff' },
-  { id: 'na', symbol: 'Na', name: 'Sodium', reactivity: 0.85, color: '#fcf6bd', desc: 'Vigorous exothermic reaction. Melts into a small white sphere, darts rapidly across the surface, often exploding with yellow flames.', danger: 'Critical', flameColor: '#ffbb00' },
-  { id: 'li', symbol: 'Li', name: 'Lithium', reactivity: 0.72, color: '#ffb3c6', desc: 'Vigorous bubbling. Fizzes intensely and steadily, releasing hydrogen gas rapidly without exploding.', danger: 'High' },
-  { id: 'ca', symbol: 'Ca', name: 'Calcium', reactivity: 0.62, color: '#e2ece9', desc: 'Highly reactive. Dissolves rapidly, clouding the solution with white calcium salt precipitate while heating up intensely.', danger: 'High' },
-  { id: 'mg', symbol: 'Mg', name: 'Magnesium', reactivity: 0.52, color: '#ffffff', desc: 'Vigorous reaction. Fast energetic bubbling, heating the tube highly and quickly dissolving the ribbon.', danger: 'Medium' },
-  { id: 'zn', symbol: 'Zn', name: 'Zinc', reactivity: 0.42, color: '#a0c4ff', desc: 'Moderate, steady reaction. Bubbles rise rapidly in a stable stream, commonly used for hydrogen gas synthesis.', danger: 'Medium' },
-  { id: 'fe', symbol: 'Fe', name: 'Iron', reactivity: 0.32, color: '#ffca3a', desc: 'Slow, mild reaction. Fizzes slowly, forming a light greenish iron salt solution over extended exposure.', danger: 'Low' },
-  { id: 'cu', symbol: 'Cu', name: 'Copper', reactivity: 0.12, color: '#a8dadc', desc: 'No reaction with HCl or H₂SO₄. Reacts with Nitric acid to yield rich blue copper complexes and toxic brown nitrogen dioxide gas.', danger: 'Medium', flameColor: '#00ffcc' },
-  { id: 'ag', symbol: 'Ag', name: 'Silver', reactivity: 0.05, color: '#e2e2e2', desc: 'Highly resistant. Unreactive in most acids; dissolves slowly in hot concentrated nitric acid.', danger: 'Low' },
-  { id: 'au', symbol: 'Au', name: 'Gold', reactivity: 0.0, color: '#ffe494', desc: 'Completely unreactive to single acids. Dissolves exclusively in Aqua Regia via coordination complexing.', danger: 'None' }
+  { id: 'k', symbol: 'K', name: 'Potassium', reactivity: 1.0, color: '#bcc2f2', desc: 'Reacts explosively with dilute acids. Instantly ignites producing violent purple/lilac flames and thermal shocks.', danger: 'Critical', flameColor: '#d666ff' },
+  { id: 'na', symbol: 'Na', name: 'Sodium', reactivity: 0.85, color: '#d1d5db', desc: 'Vigorous exothermic reaction. Melts into a small white sphere, darts rapidly across the surface, often exploding with yellow flames.', danger: 'Critical', flameColor: '#ffbb00' },
+  { id: 'li', symbol: 'Li', name: 'Lithium', reactivity: 0.72, color: '#a1a1aa', desc: 'Vigorous bubbling. Fizzes intensely and steadily, releasing hydrogen gas rapidly without exploding.', danger: 'High' },
+  { id: 'ca', symbol: 'Ca', name: 'Calcium', reactivity: 0.62, color: '#cbd5e1', desc: 'Highly reactive. Dissolves rapidly, clouding the solution with white calcium salt precipitate while heating up intensely.', danger: 'High' },
+  { id: 'mg', symbol: 'Mg', name: 'Magnesium', reactivity: 0.52, color: '#f3f4f6', desc: 'Vigorous reaction. Fast energetic bubbling, heating the tube highly and quickly dissolving the ribbon.', danger: 'Medium' },
+  { id: 'zn', symbol: 'Zn', name: 'Zinc', reactivity: 0.42, color: '#94a3b8', desc: 'Moderate, steady reaction. Bubbles rise rapidly in a stable stream, commonly used for hydrogen gas synthesis.', danger: 'Medium' },
+  { id: 'fe', symbol: 'Fe', name: 'Iron', reactivity: 0.32, color: '#475569', desc: 'Slow, mild reaction. Fizzes slowly, forming a light greenish iron salt solution over extended exposure.', danger: 'Low' },
+  { id: 'cu', symbol: 'Cu', name: 'Copper', reactivity: 0.12, color: '#b87333', desc: 'No reaction with HCl or H₂SO₄. Reacts with Nitric acid to yield rich blue copper complexes and toxic brown nitrogen dioxide gas.', danger: 'Medium', flameColor: '#00ffcc' },
+  { id: 'ag', symbol: 'Ag', name: 'Silver', reactivity: 0.05, color: '#e2e8f0', desc: 'Highly resistant. Unreactive in most acids; dissolves slowly in hot concentrated nitric acid.', danger: 'Low' },
+  { id: 'au', symbol: 'Au', name: 'Gold', reactivity: 0.0, color: '#ffd700', desc: 'Completely unreactive to single acids. Dissolves exclusively in Aqua Regia via coordination complexing.', danger: 'None' }
 ];
 
 interface Bubble {
