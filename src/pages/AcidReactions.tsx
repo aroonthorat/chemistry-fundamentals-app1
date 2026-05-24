@@ -68,6 +68,9 @@ interface Bubble {
   size: number;
   speed: number;
   opacity: number;
+  startX: number;
+  wobbleSpeed: number;
+  wobbleWidth: number;
 }
 
 interface Spark {
@@ -97,11 +100,13 @@ const AcidReactions = () => {
   const [reactionTemp, setReactionTemp] = useState(25); // Dynamic temperature
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const [sparks, setSparks] = useState<Spark[]>([]);
+  const [metalX, setMetalX] = useState(100);
 
   // Simulation Loop References
   const requestRef = useRef<number | null>(null);
   const bubbleIdRef = useRef(0);
   const sparkIdRef = useRef(0);
+  const metalXRef = useRef(100);
 
   // Sync background effect with selected metal
   useEffect(() => {
@@ -249,6 +254,34 @@ const AcidReactions = () => {
     return dynamicPH.toFixed(2);
   }, [concentration, activeAcid, isReacting, dissolvedPct]);
 
+  // Helper to calculate dynamic liquid colors based on metal, acid, and reaction progress
+  const dynamicLiquidColor = useMemo(() => {
+    const baseColor = activeAcid.color;
+    
+    if (!isReacting && dissolvedPct === 0) return baseColor;
+    
+    // Copper + Nitric Acid -> Deep Turquoise / Emerald Blue
+    if (activeMetal.id === 'cu' && activeAcid.id === 'hno3') {
+      const pct = dissolvedPct / 100;
+      // Interpolate from activeAcid.color (#00d2ff) to a beautiful copper nitrate teal (#006666 / #0077b6)
+      return pct > 0.5 ? '#0077b6' : '#00b4d8';
+    }
+    
+    // Calcium -> cloudy white precipitate
+    if (activeMetal.id === 'ca') {
+      const pct = dissolvedPct / 100;
+      return pct > 0.5 ? '#e2ece9' : '#b2c8c4'; // turns into a milky/chalky white-ish aqua
+    }
+
+    // Iron + Acid -> pale green iron salts
+    if (activeMetal.id === 'fe') {
+      const pct = dissolvedPct / 100;
+      return pct > 0.5 ? '#d8f3dc' : baseColor;
+    }
+    
+    return baseColor;
+  }, [activeAcid, activeMetal, isReacting, dissolvedPct]);
+
   // Main simulation render cycle
   const updateSimulation = () => {
     if (!isReacting || isCompleted) return;
@@ -279,26 +312,70 @@ const AcidReactions = () => {
       return (dissolvedPct / 100) * scale;
     });
 
+    // Drift metal coordinate for floating Na/K
+    let nextMetalX = 100;
+    if (['k', 'na'].includes(activeMetal.id)) {
+      const drift = (Math.random() - 0.5) * 6 * activeMetal.reactivity;
+      nextMetalX = Math.max(82, Math.min(118, metalXRef.current + drift));
+      metalXRef.current = nextMetalX;
+      setMetalX(nextMetalX);
+    } else {
+      metalXRef.current = 100;
+      setMetalX(100);
+    }
+
     // Handle Bubbles (hydrogen/nitrogen oxides)
     setBubbles(prev => {
-      // Filter out bubbles that rose beyond top of liquid (y < 40)
-      const updated = prev.map(b => ({
-        ...b,
-        y: b.y - b.speed,
-        opacity: b.y < 80 ? (b.y - 40) / 40 : b.opacity
-      })).filter(b => b.y > 40);
+      // Filter out bubbles that rose beyond surface of liquid (y < 110)
+      const updated = prev.map(b => {
+        const nextY = b.y - b.speed;
+        // Wobbling sway motion
+        const nextX = b.startX + Math.sin(nextY * b.wobbleSpeed + b.id) * b.wobbleWidth;
+        // Fade out as it pops at the liquid surface
+        const opacity = nextY < 125 ? Math.max(0, (nextY - 110) / 15) * 0.8 : 0.8;
+        return {
+          ...b,
+          x: nextX,
+          y: nextY,
+          opacity: opacity
+        };
+      }).filter(b => b.y >= 110);
 
       // Generate new bubbles based on reaction rate
-      const spawnCount = Math.floor(Math.random() * (reactionRate * 12)) + 1;
-      if (spawnCount > 0 && prev.length < 120 && dissolvedPct < 98) {
+      const spawnCount = Math.floor(Math.random() * (reactionRate * 15)) + 1;
+      if (spawnCount > 0 && prev.length < 150 && dissolvedPct < 98) {
+        const isFloating = ['k', 'na'].includes(activeMetal.id);
+        const metalWidth = 40 * (1 - dissolvedPct / 100);
+
         for (let i = 0; i < spawnCount; i++) {
           bubbleIdRef.current += 1;
+          
+          let spawnX = 80 + Math.random() * 40;
+          let spawnY = 220;
+          let size = 1.5 + Math.random() * (3 + activeMetal.reactivity * 3);
+          let speed = 1.2 + Math.random() * 2 + (temperature / 40);
+
+          if (isFloating) {
+            // Spawning near the floating metal piece at the surface
+            spawnX = nextMetalX - 12 + Math.random() * 24;
+            spawnY = 112 + Math.random() * 10;
+            size = 1 + Math.random() * 3;
+            speed = 0.5 + Math.random() * 1.5; // slow bubbles bubbling around the floating globule
+          } else {
+            // Sinking metals - spawn directly on the eroding metal piece!
+            spawnX = 100 - metalWidth / 2 + Math.random() * metalWidth;
+            spawnY = 210 + Math.random() * 8;
+          }
+
           updated.push({
             id: bubbleIdRef.current,
-            x: 80 + Math.random() * 80, // Flask center region
-            y: 220, // Bottom of liquid
-            size: 2 + Math.random() * (4 + activeMetal.reactivity * 4),
-            speed: 1.5 + Math.random() * 3 + (temperature / 30),
+            x: spawnX,
+            y: spawnY,
+            startX: spawnX,
+            wobbleWidth: 1.2 + Math.random() * 3.5,
+            wobbleSpeed: 0.04 + Math.random() * 0.06,
+            size: size,
+            speed: speed,
             opacity: 0.8
           });
         }
@@ -313,22 +390,22 @@ const AcidReactions = () => {
           ...s,
           x: s.x + s.vx,
           y: s.y + s.vy,
-          vy: s.vy + 0.1, // gravity
-          size: s.size * 0.95
+          vy: s.vy + 0.12, // gravity
+          size: s.size * 0.94
         })).filter(s => s.size > 0.5);
 
-        const sparkSpawn = Math.floor(Math.random() * (activeMetal.reactivity * 5));
+        const sparkSpawn = Math.floor(Math.random() * (activeMetal.reactivity * 6)) + 1;
         const color = activeMetal.flameColor || '#ffaa00';
-        if (sparkSpawn > 0 && prev.length < 50) {
+        if (sparkSpawn > 0 && prev.length < 60) {
           for (let i = 0; i < sparkSpawn; i++) {
             sparkIdRef.current += 1;
             updated.push({
               id: sparkIdRef.current,
-              x: 120, // Flask neck center
-              y: 110, // Top surface
-              vx: (Math.random() - 0.5) * 4,
-              vy: -2 - Math.random() * 3,
-              size: 2 + Math.random() * 5,
+              x: nextMetalX - 55, // Center around dynamic floating metal
+              y: 108 - 80, // Top surface inside spark container coordinates
+              vx: (Math.random() - 0.5) * 5,
+              vy: -2.5 - Math.random() * 4,
+              size: 2.5 + Math.random() * 5.5,
               color: color
             });
           }
@@ -531,18 +608,28 @@ const AcidReactions = () => {
               <AnimatePresence>
                 {isReacting && activeMetal.id === 'cu' && activeAcid.id === 'hno3' && (
                   <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.65 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ 
+                      opacity: 0.65,
+                      y: [0, -4, 0],
+                      scale: [1, 1.05, 1]
+                    }}
                     exit={{ opacity: 0 }}
+                    transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut" }}
                     className="absolute top-10 w-28 h-36 rounded-full blur-2xl pointer-events-none"
                     style={{ background: 'radial-gradient(circle, #b07d62 0%, transparent 70%)' }}
                   />
                 )}
                 {isReacting && activeMetal.id === 'au' && activeAcid.id === 'aqua_regia' && (
                   <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.55 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ 
+                      opacity: 0.55,
+                      y: [0, -4, 0],
+                      scale: [1, 1.05, 1]
+                    }}
                     exit={{ opacity: 0 }}
+                    transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut" }}
                     className="absolute top-10 w-28 h-36 rounded-full blur-2xl pointer-events-none"
                     style={{ background: 'radial-gradient(circle, #d90429 0%, transparent 70%)' }}
                   />
@@ -551,7 +638,48 @@ const AcidReactions = () => {
 
               {/* Erlenmeyer SVG */}
               <svg viewBox="0 0 200 240" className="w-full h-full drop-shadow-[0_15px_40px_rgba(0,0,0,0.6)]">
-                
+                <defs>
+                  {/* Glass highlights */}
+                  <linearGradient id="glassHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.16)" />
+                    <stop offset="25%" stopColor="rgba(255, 255, 255, 0.0)" />
+                    <stop offset="75%" stopColor="rgba(255, 255, 255, 0.0)" />
+                    <stop offset="85%" stopColor="rgba(255, 255, 255, 0.1)" />
+                    <stop offset="100%" stopColor="rgba(255, 255, 255, 0.26)" />
+                  </linearGradient>
+
+                  {/* Bubble 3D sphere gradient */}
+                  <radialGradient id="bubbleGrad" cx="35%" cy="35%" r="65%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.85" />
+                    <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+                    <stop offset="85%" stopColor="#ffffff" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0.65" />
+                  </radialGradient>
+                  
+                  {/* Bubble 3D copper/brown sphere gradient */}
+                  <radialGradient id="bubbleBrownGrad" cx="35%" cy="35%" r="65%">
+                    <stop offset="0%" stopColor="#ffd8be" stopOpacity="0.9" />
+                    <stop offset="40%" stopColor="#b07d62" stopOpacity="0.25" />
+                    <stop offset="85%" stopColor="#9c6644" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="#7f5539" stopOpacity="0.75" />
+                  </radialGradient>
+
+                  {/* Shiny liquid-metal sphere for Na/K */}
+                  <radialGradient id="metalMetallicGrad" cx="30%" cy="30%" r="70%">
+                    <stop offset="0%" stopColor="#ffffff" />
+                    <stop offset="35%" stopColor="#e2e2e2" />
+                    <stop offset="75%" stopColor="#9aa0a6" />
+                    <stop offset="100%" stopColor="#5f6368" />
+                  </radialGradient>
+
+                  {/* Dynamic Acid Liquid Body Gradient */}
+                  <linearGradient id="acidGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor={dynamicLiquidColor} stopOpacity="0.55" />
+                    <stop offset="50%" stopColor={dynamicLiquidColor} stopOpacity="0.38" />
+                    <stop offset="100%" stopColor={activeMetal.id === 'ca' && dissolvedPct > 10 ? '#ffffff' : dynamicLiquidColor} stopOpacity="0.2" />
+                  </linearGradient>
+                </defs>
+
                 {/* Aqua background shadow inside the beaker */}
                 <path 
                   d="M 85 40 L 115 40 L 115 80 L 175 210 Q 185 230 165 230 L 35 230 Q 15 230 25 210 L 85 80 Z"
@@ -563,8 +691,8 @@ const AcidReactions = () => {
                 {/* Acid Liquid Body */}
                 <motion.path 
                   d="M 72 110 L 128 110 L 170 215 C 175 228 160 228 150 228 L 50 228 C 40 228 25 228 30 215 Z"
-                  fill={activeAcid.color}
-                  opacity={0.25}
+                  fill="url(#acidGrad)"
+                  opacity={0.7}
                   animate={isReacting && reactionPossible ? {
                     d: [
                       "M 72 110 L 128 110 L 170 215 C 175 228 160 228 150 228 L 50 228 C 40 228 25 228 30 215 Z",
@@ -575,20 +703,50 @@ const AcidReactions = () => {
                   transition={{ repeat: Infinity, duration: Math.max(0.2, 1 - (reactionRate * 2)), ease: "easeInOut" }}
                 />
 
-                {/* Active bubbles layer */}
-                {bubbles.map(b => (
-                  <circle
-                    key={b.id}
-                    cx={b.x}
-                    cy={b.y}
-                    r={b.size}
-                    fill={activeMetal.id === 'cu' && activeAcid.id === 'hno3' ? '#c77d55' : '#ffffff'}
-                    opacity={b.opacity}
-                  />
-                ))}
+                {/* Curved Liquid Surface Meniscus */}
+                <ellipse 
+                  cx={100} 
+                  cy={110} 
+                  rx={28} 
+                  ry={5} 
+                  fill={dynamicLiquidColor} 
+                  opacity={0.4} 
+                  stroke={activeMetal.id === 'ca' && dissolvedPct > 10 ? '#ffffff' : dynamicLiquidColor} 
+                  strokeWidth={1}
+                  style={{
+                    filter: isReacting ? `drop-shadow(0 0 ${2 + (reactionRate * 6)}px ${dynamicLiquidColor})` : 'none'
+                  }}
+                />
 
-                {/* Metal Piece (shrinks as it dissolves) */}
-                {isReacting && dissolvedPct < 100 && (
+                {/* Active bubbles layer */}
+                {bubbles.map(b => {
+                  const isNO2 = activeMetal.id === 'cu' && activeAcid.id === 'hno3';
+                  return (
+                    <g key={b.id}>
+                      {/* Bubble 3D sphere */}
+                      <circle
+                        cx={b.x}
+                        cy={b.y}
+                        r={b.size}
+                        fill={isNO2 ? 'url(#bubbleBrownGrad)' : 'url(#bubbleGrad)'}
+                        stroke={isNO2 ? 'rgba(127,85,57,0.3)' : 'rgba(255,255,255,0.55)'}
+                        strokeWidth="0.4"
+                        opacity={b.opacity}
+                      />
+                      {/* 3D Specular Highlight Dot */}
+                      <circle
+                        cx={b.x - b.size * 0.35}
+                        cy={b.y - b.size * 0.35}
+                        r={b.size * 0.18}
+                        fill="#ffffff"
+                        opacity={b.opacity * 0.95}
+                      />
+                    </g>
+                  );
+                })}
+
+                {/* Metal Piece (shrinks as it dissolves) - Sinking */}
+                {isReacting && dissolvedPct < 100 && !['k', 'na'].includes(activeMetal.id) && (
                   <motion.rect
                     x={100 - (20 * (1 - dissolvedPct/100))}
                     y={210}
@@ -604,6 +762,29 @@ const AcidReactions = () => {
                     }}
                   />
                 )}
+
+                {/* Floating Metal Piece (Na/K) - melts into a sphere and darts on the surface */}
+                {isReacting && dissolvedPct < 100 && ['k', 'na'].includes(activeMetal.id) && (
+                  <circle
+                    cx={metalX}
+                    cy={108}
+                    r={8 * (1 - dissolvedPct/100)}
+                    fill="url(#metalMetallicGrad)"
+                    stroke="#ffffff"
+                    strokeWidth="1"
+                    opacity={0.95}
+                    style={{
+                      filter: `drop-shadow(0 0 ${6 + (reactionRate * 15)}px ${activeMetal.color})`
+                    }}
+                  />
+                )}
+
+                {/* Beaker Reflection Overlay */}
+                <path 
+                  d="M 85 30 L 115 30 L 115 80 L 175 210 C 185 230 165 230 150 230 L 50 230 C 35 230 15 230 25 210 L 85 80 Z"
+                  fill="url(#glassHighlight)"
+                  pointerEvents="none"
+                />
 
                 {/* Flask Glass Outline Grid Layer */}
                 <path 
