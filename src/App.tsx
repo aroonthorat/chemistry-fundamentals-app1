@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import PremiumLayout from './layouts/PremiumLayout';
+import MouseCharacter from './components/MouseCharacter';
 
 const Home = lazy(() => import('./pages/Home'));
 const AtomicLab = lazy(() => import('./pages/AtomicLab'));
@@ -23,6 +24,8 @@ const PageLoader = () => (
 function App() {
   return (
     <Suspense fallback={<PageLoader />}>
+      {/* Cursor-tracking mascot, shown across every route */}
+      <MouseCharacter />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route element={<PremiumLayout />}>
