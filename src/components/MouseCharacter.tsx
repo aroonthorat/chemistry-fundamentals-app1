@@ -35,6 +35,15 @@ type Props = {
   src?: string;
   /** Rendered width of the character in pixels. */
   size?: number;
+  /**
+   * `framed`  — circular avatar bubble with a glowing ring. Best for images
+   *             that still have a background (hides the rectangular edges).
+   * `cutout`  — render the raw image; use this once you have a transparent PNG
+   *             for a true "peeking character" look.
+   */
+  variant?: 'framed' | 'cutout';
+  /** Focus point of the image inside the circular crop (CSS object-position). */
+  focus?: string;
   /** Optional pupil positions to enable separate eye-tracking. */
   eyes?: { left: EyeSpec; right: EyeSpec };
   /** How far the pupils may travel from centre, in px. */
@@ -43,7 +52,9 @@ type Props = {
 
 const MouseCharacter = ({
   src = '/character.png',
-  size = 220,
+  size = 160,
+  variant = 'framed',
+  focus = '50% 22%',
   eyes,
   pupilRange = 6,
 }: Props) => {
@@ -102,23 +113,25 @@ const MouseCharacter = ({
 
   if (!enabled) return null;
 
+  const framed = variant === 'framed';
+
   return (
     <motion.div
       ref={containerRef}
       aria-hidden
-      initial={{ y: size * 0.6, opacity: 0 }}
+      initial={{ y: size * 0.7, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 90, damping: 16, delay: 0.6 }}
       style={{
         position: 'fixed',
-        right: 16,
-        bottom: 0,
+        right: 24,
+        bottom: framed ? 24 : 0,
         width: size,
         height: size,
         zIndex: 60,
         pointerEvents: 'none',
         perspective: 600,
-        filter: 'drop-shadow(0 12px 24px rgba(0,240,255,0.25))',
+        filter: 'drop-shadow(0 12px 28px rgba(0,240,255,0.3))',
       }}
     >
       <motion.div
@@ -128,6 +141,15 @@ const MouseCharacter = ({
           transformStyle: 'preserve-3d',
           rotateX: prefersReduced ? 0 : rotateX,
           rotateY: prefersReduced ? 0 : rotateY,
+          borderRadius: framed ? '50%' : 0,
+          overflow: framed ? 'hidden' : 'visible',
+          border: framed ? '3px solid rgba(0,240,255,0.55)' : 'none',
+          boxShadow: framed
+            ? '0 0 24px rgba(0,240,255,0.45), inset 0 0 18px rgba(0,240,255,0.15)'
+            : 'none',
+          background: framed
+            ? 'radial-gradient(circle at 50% 30%, rgba(10,20,30,0.4), rgba(5,5,10,0.85))'
+            : 'transparent',
         }}
       >
         <img
@@ -139,7 +161,13 @@ const MouseCharacter = ({
           onError={(e) => {
             e.currentTarget.style.visibility = 'hidden';
           }}
-          style={{ width: '100%', height: '100%', objectFit: 'contain', userSelect: 'none' }}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: framed ? focus : 'center',
+            userSelect: 'none',
+          }}
         />
 
         {/* Optional separate eye-tracking overlay. */}
