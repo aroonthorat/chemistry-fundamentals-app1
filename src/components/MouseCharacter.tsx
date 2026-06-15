@@ -31,7 +31,7 @@ type EyeSpec = {
 };
 
 type Props = {
-  /** Path to the character image. Defaults to `/character.png`. */
+  /** Path to the character image. Defaults to `/character.webp`. */
   src?: string;
   /** Rendered width of the character in pixels. */
   size?: number;
@@ -51,7 +51,7 @@ type Props = {
 };
 
 const MouseCharacter = ({
-  src = '/character.png',
+  src = '/character.webp',
   size = 160,
   variant = 'framed',
   focus = '50% 22%',
