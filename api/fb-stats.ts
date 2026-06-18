@@ -15,7 +15,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.json({ followers: cachedCount, cached: true });
   }
 
-  const pageId = process.env.FB_PAGE_ID || '100063990864335';
+  const pageId = process.env.FB_PAGE_ID || '157376048062784';
   const pageToken = process.env.FB_PAGE_TOKEN;
   const appId = process.env.FB_APP_ID;
   const appSecret = process.env.FB_APP_SECRET;
@@ -31,10 +31,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // With a Page token, `me` resolves to the page itself, which avoids any
-    // page-id mismatch. With an app token we must target the page id directly.
-    const target = pageToken ? 'me' : pageId;
-    const url = `https://graph.facebook.com/v18.0/${target}?fields=followers_count,fan_count&access_token=${token}`;
+    // Query the page by id. This works with a Page token, or a User token
+    // that has been granted pages_read_engagement for the page.
+    const url = `https://graph.facebook.com/v18.0/${pageId}?fields=followers_count,fan_count&access_token=${token}`;
     const fbRes = await fetch(url);
     const data = await fbRes.json() as {
       followers_count?: number;
