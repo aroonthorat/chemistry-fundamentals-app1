@@ -30,20 +30,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.json({ followers: 35000, cached: false, note: 'No FB credentials configured' });
   }
 
-  // TEMPORARY diagnostic: /api/fb-stats?debug=1 reports the shape of the
-  // configured token (never the full secret) to help verify it was pasted
-  // completely. Remove after setup is confirmed working.
-  if (req.query.debug === '1') {
-    return res.json({
-      hasPageToken: !!pageToken,
-      usingAppTokenFallback: !pageToken,
-      tokenLength: token.length,
-      tokenStart: token.slice(0, 6),
-      tokenEnd: token.slice(-4),
-      pageId,
-    });
-  }
-
   try {
     // Query the page by id. This works with a Page token, or a User token
     // that has been granted pages_read_engagement for the page.
