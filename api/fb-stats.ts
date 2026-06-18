@@ -15,31 +15,48 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.json({ followers: cachedCount, cached: true });
   }
 
-  const pageId = process.env.FB_PAGE_ID || '100063990864335';
+  const pageId = process.env.FB_PAGE_ID || '157376048062784';
+  const pageToken = process.env.FB_PAGE_TOKEN;
   const appId = process.env.FB_APP_ID;
   const appSecret = process.env.FB_APP_SECRET;
 
-  if (!appId || !appSecret) {
+  // Facebook now requires a Page Access Token to read a page's follower/fan
+  // count. Prefer that token; fall back to an app token if only app
+  // credentials are configured (kept for backwards compatibility).
+  const token = pageToken || (appId && appSecret ? `${appId}|${appSecret}` : null);
+
+  if (!token) {
     // Return the static fallback — credentials not yet configured
     return res.json({ followers: 35000, cached: false, note: 'No FB credentials configured' });
   }
 
   try {
-    const token = `${appId}|${appSecret}`;
-    const url = `https://graph.facebook.com/v18.0/${pageId}?fields=fan_count&access_token=${token}`;
+    // Query the page by id. This works with a Page token, or a User token
+    // that has been granted pages_read_engagement for the page.
+    const url = `https://graph.facebook.com/v18.0/${pageId}?fields=followers_count,fan_count&access_token=${token}`;
     const fbRes = await fetch(url);
-    const data = await fbRes.json() as { fan_count?: number; error?: { message: string } };
+    const data = await fbRes.json() as {
+      followers_count?: number;
+      fan_count?: number;
+      error?: { message: string };
+    };
 
     if (data.error) {
       console.error('Facebook API error:', data.error.message);
-      return res.status(502).json({ followers: 35000, error: data.error.message });
+      return res.status(502).json({ followers: cachedCount ?? 35000, error: data.error.message });
     }
 
-    cachedCount = data.fan_count ?? 35000;
+    // Prefer the true follower count; fall back to fan_count (page likes).
+    const count = data.followers_count ?? data.fan_count;
+    if (typeof count !== 'number') {
+      return res.status(502).json({ followers: cachedCount ?? 35000, error: 'No count field returned' });
+    }
+
+    cachedCount = count;
     cacheTime = Date.now();
     return res.json({ followers: cachedCount, cached: false });
   } catch (err) {
     console.error('Fetch failed:', err);
-    return res.status(500).json({ followers: 35000, error: 'Fetch failed' });
+    return res.status(500).json({ followers: cachedCount ?? 35000, error: 'Fetch failed' });
   }
 }
