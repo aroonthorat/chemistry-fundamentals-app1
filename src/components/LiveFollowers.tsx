@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Users } from 'lucide-react';
+import { useFollowerCount } from '../hooks/useFollowerCount';
 
 interface Props {
   /** initial/fallback value while fetching */
@@ -41,30 +42,8 @@ function useCountUp(to: number, duration = 1200) {
 }
 
 export default function LiveFollowers({ fallback = 35000, refreshMs = 5 * 60 * 1000 }: Props) {
-  const [count, setCount] = useState(fallback);
-  const [isLive, setIsLive] = useState(false);
+  const { count, isLive } = useFollowerCount(fallback, refreshMs);
   const animatedCount = useCountUp(count);
-
-  const fetch_count = async () => {
-    try {
-      // In dev: uses relative URL which Vite proxies or hits Vercel in prod
-      const res = await fetch('/api/fb-stats');
-      if (!res.ok) return;
-      const data = await res.json() as { followers: number };
-      if (typeof data.followers === 'number') {
-        setCount(data.followers);
-        setIsLive(true);
-      }
-    } catch {
-      // silently fall back to static value
-    }
-  };
-
-  useEffect(() => {
-    fetch_count();
-    const id = setInterval(fetch_count, refreshMs);
-    return () => clearInterval(id);
-  }, [refreshMs]);
 
   return (
     <div className="live-followers-badge">

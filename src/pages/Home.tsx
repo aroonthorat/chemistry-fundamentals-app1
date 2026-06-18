@@ -3,6 +3,7 @@ import { Beaker, Atom, TestTube, ArrowRight, BookOpen, GraduationCap, Brain, Glo
 import { Link } from 'react-router-dom';
 import ScrollCanvas from '../components/ScrollCanvas';
 import LiveFollowers from '../components/LiveFollowers';
+import { useFollowerCount, roundedCount } from '../hooks/useFollowerCount';
 import InteractivePeriodicTable from '../components/InteractivePeriodicTable';
 import ElementDetailModal from '../components/ElementDetailModal';
 import type { Element } from '../types/chemistry';
@@ -21,6 +22,7 @@ declare global {
 
 function Home() {
   const [selectedElement, setSelectedElement] = useState<Element | null>(null);
+  const { count: followerCount } = useFollowerCount();
 
   // Load Facebook SDK
   useEffect(() => {
@@ -193,7 +195,7 @@ function Home() {
         <div className="container community-grid">
           <div className="community-content">
             <h3>Live Updates from our <span className="text-gradient">Community</span></h3>
-            <p>Stay updated with the latest study materials, daily chemistry questions, tips, and important announcements directly from our Facebook page. Join 35,000+ students actively learning every day!</p>
+            <p>Stay updated with the latest study materials, daily chemistry questions, tips, and important announcements directly from our Facebook page. Join {roundedCount(followerCount)} students actively learning every day!</p>
 
             <div className="stats-grid">
               <div className="stat-item glass-panel">
