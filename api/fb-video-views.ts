@@ -41,8 +41,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       `https://graph.facebook.com/v18.0/${pageId}/videos?fields=views&limit=100&access_token=${token}`;
     let total = 0;
     let pages = 0;
-    let videoCount = 0;
-    let firstPageSample: unknown = null;
 
     while (url && pages < MAX_PAGES) {
       const fbRes = await fetch(url);
@@ -53,19 +51,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(502).json({ views: cachedViews ?? 0, error: data.error.message });
       }
 
-      if (pages === 0) firstPageSample = (data.data ?? []).slice(0, 3);
-
       for (const video of data.data ?? []) {
-        videoCount += 1;
         if (typeof video.views === 'number') total += video.views;
       }
 
       url = data.paging?.next;
       pages += 1;
-    }
-
-    if (req.query.debug === '1') {
-      return res.json({ total, videoCount, pages, firstPageSample });
     }
 
     cachedViews = total;
