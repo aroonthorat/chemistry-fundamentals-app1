@@ -8,7 +8,6 @@ import ElementDetailModal from '../components/ElementDetailModal';
 import type { Element } from '../types/chemistry';
 import { useState } from 'react';
 import HeroMolecule from '../components/HeroMolecule';
-import ParticleField from '../components/ParticleField';
 
 declare global {
   interface Window {
@@ -65,7 +64,6 @@ function Home() {
 
       {/* Hero Section */}
       <section className="hero">
-        <ParticleField />
         <div className="hero-atmosphere" aria-hidden="true">
           <div className="hero-orb hero-orb-left" />
           <div className="hero-orb hero-orb-right" />
