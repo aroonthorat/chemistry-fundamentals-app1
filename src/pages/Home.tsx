@@ -8,9 +8,8 @@ import InteractivePeriodicTable from '../components/InteractivePeriodicTable';
 import ElementDetailModal from '../components/ElementDetailModal';
 import type { Element } from '../types/chemistry';
 import { useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import AcidicBackground from '../components/AcidicBackground';
 import HeroMolecule from '../components/HeroMolecule';
+import ParticleField from '../components/ParticleField';
 
 declare global {
   interface Window {
@@ -46,14 +45,6 @@ function Home() {
 
   return (
     <>
-      {/* 3D WebGL Background Layer */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: -2, background: '#000' }}>
-        <Canvas camera={{ position: [0, 0, 1] }} dpr={[1, 1.5]}>
-          <AcidicBackground color="#00ff88" />
-        </Canvas>
-      </div>
-      <div className="home-hero-backdrop" />
-
       {/* Navigation */}
       <header>
         <div className="container navbar">
@@ -75,6 +66,7 @@ function Home() {
 
       {/* Hero Section */}
       <section className="hero">
+        <ParticleField />
         <div className="hero-atmosphere" aria-hidden="true">
           <div className="hero-orb hero-orb-left" />
           <div className="hero-orb hero-orb-right" />

@@ -262,17 +262,6 @@ header {
   z-index: 1;
 }
 
-.home-hero-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background:
-    linear-gradient(180deg, rgba(2, 18, 7, 0.78) 0%, rgba(3, 14, 10, 0.5) 35%, rgba(5, 5, 5, 0.18) 65%, rgba(5, 5, 5, 0.72) 100%),
-    radial-gradient(circle at 20% 20%, rgba(0, 240, 255, 0.08), transparent 22%),
-    radial-gradient(circle at 80% 15%, rgba(138, 43, 226, 0.12), transparent 18%);
-  pointer-events: none;
-}
-
 .hero-orb {
   position: absolute;
   border-radius: 999px;
