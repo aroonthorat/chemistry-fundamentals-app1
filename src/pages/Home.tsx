@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { FlaskConical, Atom, TestTube, ArrowRight, BookOpen, GraduationCap, Brain, Globe, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import ScrollCanvas from '../components/ScrollCanvas';
 import LiveFollowers from '../components/LiveFollowers';
 import { useFollowerCount, roundedCount } from '../hooks/useFollowerCount';
 import InteractivePeriodicTable from '../components/InteractivePeriodicTable';
@@ -106,9 +105,6 @@ function Home() {
           </div>
         </div>
       </section>
-
-      {/* 3D Scroll Animation */}
-      <ScrollCanvas />
 
       {/* Branches of Chemistry */}
       <section id="topics" className="glass-panel" style={{ margin: '0 24px', position: 'relative', zIndex: 10 }}>
