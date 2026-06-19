@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Beaker, Atom, TestTube, ArrowRight, BookOpen, GraduationCap, Brain, Globe, Sparkles } from 'lucide-react';
+import { FlaskConical, Atom, TestTube, ArrowRight, BookOpen, GraduationCap, Brain, Globe, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ScrollCanvas from '../components/ScrollCanvas';
 import LiveFollowers from '../components/LiveFollowers';
@@ -10,6 +10,7 @@ import type { Element } from '../types/chemistry';
 import { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import AcidicBackground from '../components/AcidicBackground';
+import HeroMolecule from '../components/HeroMolecule';
 
 declare global {
   interface Window {
@@ -79,34 +80,37 @@ function Home() {
           <div className="hero-orb hero-orb-right" />
         </div>
         <div className="container hero-content">
-          <div className="hero-panel glass-panel">
-            <div className="hero-badge">
-              <GraduationCap size={16} /> XI, XII, NEET & JEE Preparation
-            </div>
-            <h1>Master the Elements of <span className="text-gradient">Success</span></h1>
-            <p>Your ultimate companion for dominating Organic, Inorganic, and Physical Chemistry. Join our community of thousands of students excelling in board exams and competitive tests.</p>
-            <div className="hero-buttons">
-              <Link to="/acid-reactions" className="btn btn-primary" style={{ background: 'var(--accent-cyan)', color: '#000', fontWeight: 'bold' }}>
-                Experience Acid Reactions <Sparkles size={20} style={{ marginLeft: '8px' }} />
-              </Link>
-              <a href="#topics" className="btn btn-secondary">
-                Explore Topics <ArrowRight size={20} />
-              </a>
-            </div>
-            <div className="hero-metrics">
-              <div className="hero-metric">
-                <strong>35k+</strong>
-                <span>Active learners</span>
+          <div className="hero-grid">
+            <div className="hero-copy">
+              <div className="hero-badge">
+                <GraduationCap size={16} /> XI, XII, NEET & JEE Preparation
               </div>
-              <div className="hero-metric">
-                <strong>3</strong>
-                <span>Core chemistry tracks</span>
+              <h1>Master the Elements of <span className="text-gradient">Success</span></h1>
+              <p className="hero-sub">Your futuristic lab for Organic, Inorganic, and Physical Chemistry — live simulations, interactive atoms, and a community of thousands of students excelling in board exams and competitive tests.</p>
+              <div className="hero-buttons">
+                <Link to="/acid-reactions" className="btn btn-primary" style={{ background: 'var(--accent-cyan)', color: '#000', fontWeight: 'bold' }}>
+                  Experience Acid Reactions <Sparkles size={20} style={{ marginLeft: '8px' }} />
+                </Link>
+                <a href="#topics" className="btn btn-secondary">
+                  Explore Topics <ArrowRight size={20} />
+                </a>
               </div>
-              <div className="hero-metric">
-                <strong>Interactive</strong>
-                <span>Labs and visual tools</span>
+              <div className="hero-metrics">
+                <div className="hero-metric">
+                  <strong>35k+</strong>
+                  <span>Active learners</span>
+                </div>
+                <div className="hero-metric">
+                  <strong>3</strong>
+                  <span>Core chemistry tracks</span>
+                </div>
+                <div className="hero-metric">
+                  <strong>118</strong>
+                  <span>Elements live</span>
+                </div>
               </div>
             </div>
+            <HeroMolecule />
           </div>
         </div>
       </section>
@@ -118,6 +122,9 @@ function Home() {
       <section id="topics" className="glass-panel" style={{ margin: '0 24px', position: 'relative', zIndex: 10 }}>
         <div className="container" style={{ padding: '80px 24px' }}>
           <div className="section-header">
+            <div className="hero-badge" style={{ margin: '0 auto 20px', borderColor: 'var(--accent-purple)', color: 'var(--accent-purple)', boxShadow: '0 0 20px rgba(138, 43, 226, 0.2)' }}>
+              <BookOpen size={16} /> Three Pillars
+            </div>
             <h2 className="section-title">Core Disciplines</h2>
             <p className="section-subtitle">Comprehensive coverage of the three main pillars of chemistry to build a rock-solid conceptual foundation.</p>
           </div>
@@ -125,7 +132,7 @@ function Home() {
           <div className="features-grid">
             <Link to="/discipline/physical" className="feature-card glass-panel block hover:-translate-y-2 transition-transform duration-300" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="feature-icon-wrapper">
-                <Beaker size={48} />
+                <FlaskConical size={48} />
               </div>
               <h3>Physical Chemistry</h3>
               <p>Master thermodynamics, kinetics, and quantum chemistry with clear mathematical foundations and intuitive problem-solving strategies.</p>
