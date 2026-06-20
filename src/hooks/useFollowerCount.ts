@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Fetches the live Facebook follower count from /api/fb-stats and refreshes it
- * on an interval. Falls back to the provided value while loading or on error.
+ * Reads the admin-maintained follower count from the stored /site-data.json.
+ * This value is controlled from the admin panel (and refreshed from Facebook
+ * there), so the public site no longer depends on a live, expiring FB token.
+ * Falls back to the provided value while loading or on error.
  */
 export function useFollowerCount(fallback = 35000, refreshMs = 5 * 60 * 1000) {
   const [count, setCount] = useState(fallback);
@@ -13,7 +15,8 @@ export function useFollowerCount(fallback = 35000, refreshMs = 5 * 60 * 1000) {
 
     const fetchCount = async () => {
       try {
-        const res = await fetch('/api/fb-stats');
+        // cache-bust so a freshly redeployed value is picked up
+        const res = await fetch(`/site-data.json?t=${Date.now()}`);
         if (!res.ok) return;
         const data = (await res.json()) as { followers?: number };
         if (!cancelled && typeof data.followers === 'number') {
