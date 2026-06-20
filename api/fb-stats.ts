@@ -10,8 +10,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
 
+  // The admin "Refresh from Facebook" button passes ?fresh=1 to bypass the cache
+  const forceFresh = req.query.fresh === '1' || req.query.fresh === 'true';
+
   // Serve cached value if fresh
-  if (cachedCount !== null && Date.now() - cacheTime < CACHE_TTL_MS) {
+  if (!forceFresh && cachedCount !== null && Date.now() - cacheTime < CACHE_TTL_MS) {
     return res.json({ followers: cachedCount, cached: true });
   }
 

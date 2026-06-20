@@ -11,6 +11,10 @@ const PeriodicTable = lazy(() => import('./pages/PeriodicTable'));
 const ElementWiki = lazy(() => import('./pages/ElementWiki'));
 const AcidReactions = lazy(() => import('./pages/AcidReactions'));
 const DisciplineWiki = lazy(() => import('./pages/DisciplineWiki'));
+const Admin = lazy(() => import('./pages/Admin'));
+
+// Obscure, hard-to-guess admin path (combined with a server-verified password)
+const ADMIN_PATH = '/cf-control-7q2x9';
 
 const PageLoader = () => (
   <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center">
@@ -31,6 +35,7 @@ function App() {
       <MouseCharacter />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path={ADMIN_PATH} element={<Admin />} />
         <Route element={<PremiumLayout />}>
           <Route path="/lab" element={<AtomicLab />} />
           <Route path="/chemist-lab" element={<ChemicalLab />} />
