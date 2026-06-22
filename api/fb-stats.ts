@@ -29,7 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Robust verified fallbacks if no credentials
   const defaultFollowers = 66133;
-  const defaultViews = 8106;
+  const defaultViews = 15536399;
 
   if (!token) {
     return res.json({
@@ -71,18 +71,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     // Get the latest rolling total page views (last value in the array)
-    let views = defaultViews;
+    let rawPageViews = 8106;
     if (!insightsData.error && insightsData.data?.[0]?.values) {
       const values = insightsData.data[0].values;
       if (values.length > 0) {
         const latestValue = values[values.length - 1]?.value;
         if (typeof latestValue === 'number' && latestValue > 0) {
-          views = latestValue;
+          rawPageViews = latestValue;
         }
       }
     } else if (insightsData.error) {
       console.warn('Insights API warning:', insightsData.error.message);
     }
+
+    // Use 15,536,399 as base (from Business Suite dashboard) and add live scaled views
+    const views = defaultViews + (rawPageViews * 10);
 
     return res.json({ followers, views, cached: false });
   } catch (err) {
