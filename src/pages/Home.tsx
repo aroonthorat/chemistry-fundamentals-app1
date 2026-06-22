@@ -37,7 +37,7 @@ const CarbonOrbits = () => {
 };
 
 function Home() {
-  const { count: followerCount } = useFollowerCount();
+  const { count: followerCount, views: pageViews } = useFollowerCount();
 
   // Load Facebook SDK
   useEffect(() => {
@@ -495,8 +495,12 @@ function Home() {
                 <div style={{ fontSize: '0.85rem', color: 'var(--cf-text-secondary)', fontWeight: 600 }}>Concept Updates</div>
               </div>
               <div className="glass-panel" style={{ padding: '25px', display: 'flex', flexDirection: 'column', gap: '5px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '20px' }}>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff' }}>5k+</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--cf-text-secondary)', fontWeight: 600 }}>Weekly Discussions</div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--cf-cyan)' }}>
+                  {pageViews > 0 ? roundedCount(pageViews) : '5k+'}
+                </div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--cf-text-secondary)', fontWeight: 600 }}>
+                  {pageViews > 0 ? 'Monthly Page Views' : 'Weekly Discussions'}
+                </div>
               </div>
               <div className="glass-panel" style={{ padding: '25px', display: 'flex', flexDirection: 'column', gap: '5px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '20px' }}>
                 <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff' }}>100%</div>
