@@ -16,8 +16,7 @@ export function useFollowerCount(fallback = 35000, refreshMs = 5 * 60 * 1000) {
 
     const fetchCount = async () => {
       try {
-        // cache-bust so a freshly redeployed value is picked up
-        const res = await fetch(`/site-data.json?t=${Date.now()}`);
+        const res = await fetch('/api/fb-stats');
         if (!res.ok) return;
         const data = (await res.json()) as { followers?: number; views?: number };
         if (!cancelled) {

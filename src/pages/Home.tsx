@@ -177,7 +177,7 @@ function Home() {
               {/* Stats */}
               <div style={{ display: 'flex', gap: '50px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '30px' }}>
                 <div>
-                  <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fff' }}>35k+</div>
+                  <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fff' }}>{roundedCount(followerCount)}</div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--cf-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '4px' }}>Active Learners</div>
                 </div>
                 <div>

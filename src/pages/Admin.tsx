@@ -12,7 +12,8 @@ type Status = { kind: 'idle' | 'ok' | 'err' | 'busy'; msg?: string };
 export default function Admin() {
   const [password, setPassword] = useState('');
   const [followers, setFollowers] = useState<number>(0);
-  const [current, setCurrent] = useState<{ followers: number; updatedAt: string } | null>(null);
+  const [views, setViews] = useState<number>(0);
+  const [current, setCurrent] = useState<{ followers: number; views: number; updatedAt: string } | null>(null);
   const [refreshStatus, setRefreshStatus] = useState<Status>({ kind: 'idle' });
   const [saveStatus, setSaveStatus] = useState<Status>({ kind: 'idle' });
 
@@ -20,11 +21,12 @@ export default function Admin() {
   useEffect(() => {
     fetch(`/site-data.json?t=${Date.now()}`)
       .then((r) => r.json())
-      .then((d: { followers?: number; updatedAt?: string }) => {
-        if (typeof d.followers === 'number') {
-          setCurrent({ followers: d.followers, updatedAt: d.updatedAt || '' });
-          setFollowers(d.followers);
-        }
+      .then((d: { followers?: number; views?: number; updatedAt?: string }) => {
+        const f = typeof d.followers === 'number' ? d.followers : 0;
+        const v = typeof d.views === 'number' ? d.views : 0;
+        setCurrent({ followers: f, views: v, updatedAt: d.updatedAt || '' });
+        setFollowers(f);
+        setViews(v);
       })
       .catch(() => {});
   }, []);
@@ -33,17 +35,28 @@ export default function Admin() {
     setRefreshStatus({ kind: 'busy', msg: 'Fetching live count from Facebook…' });
     try {
       const res = await fetch(`/api/fb-stats?fresh=1&t=${Date.now()}`);
-      const data = (await res.json()) as { followers?: number; error?: string };
+      const data = (await res.json()) as { followers?: number; views?: number; error?: string };
       if (!res.ok || data.error) {
         setRefreshStatus({ kind: 'err', msg: data.error || `Facebook request failed (${res.status})` });
         // still surface any returned number as a hint
         if (typeof data.followers === 'number') setFollowers(data.followers);
+        if (typeof data.views === 'number') setViews(data.views);
         return;
       }
-      if (typeof data.followers === 'number') {
-        setFollowers(data.followers);
-        setRefreshStatus({ kind: 'ok', msg: `Live count: ${data.followers.toLocaleString()} — click Save to publish.` });
+      
+      const hasFollowers = typeof data.followers === 'number';
+      const hasViews = typeof data.views === 'number';
+
+      if (hasFollowers) setFollowers(data.followers!);
+      if (hasViews) setViews(data.views!);
+
+      let msg = 'Live stats fetched successfully — click Save to publish.';
+      if (hasFollowers && hasViews) {
+        msg = `Live stats: ${data.followers!.toLocaleString()} followers & ${data.views!.toLocaleString()} views — click Save to publish.`;
+      } else if (hasFollowers) {
+        msg = `Live followers: ${data.followers!.toLocaleString()} — click Save to publish.`;
       }
+      setRefreshStatus({ kind: 'ok', msg });
     } catch {
       setRefreshStatus({ kind: 'err', msg: 'Network error contacting /api/fb-stats' });
     }
@@ -59,18 +72,26 @@ export default function Admin() {
       const res = await fetch('/api/admin/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password, followers }),
+        body: JSON.stringify({ password, followers, views }),
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string; followers?: number };
+      const data = (await res.json()) as { ok?: boolean; error?: string; followers?: number; views?: number };
       if (!res.ok || !data.ok) {
         setSaveStatus({ kind: 'err', msg: data.error || `Save failed (${res.status})` });
         return;
       }
+      
+      const savedFollowers = data.followers ?? followers;
+      const savedViews = data.views ?? views;
+
       setSaveStatus({
         kind: 'ok',
-        msg: `Saved ${data.followers?.toLocaleString()}. The site is redeploying — the new value goes live in ~1 minute.`,
+        msg: `Saved ${savedFollowers.toLocaleString()} followers & ${savedViews.toLocaleString()} views. The site is redeploying — the new values go live in ~1 minute.`,
       });
-      setCurrent({ followers: data.followers ?? followers, updatedAt: new Date().toISOString() });
+      setCurrent({ 
+        followers: savedFollowers, 
+        views: savedViews, 
+        updatedAt: new Date().toISOString() 
+      });
     } catch {
       setSaveStatus({ kind: 'err', msg: 'Network error contacting /api/admin/save' });
     }
@@ -89,7 +110,7 @@ export default function Admin() {
           </h1>
         </div>
         <p style={{ color: 'var(--cf-text-secondary)', fontSize: '0.95rem', marginBottom: 28 }}>
-          Update the public follower count. Pull the live number from Facebook, or enter it manually, then Save.
+          Update the public stats. Pull live numbers from Facebook, or enter them manually, then Save.
         </p>
 
         {/* Current stored value */}
@@ -102,7 +123,7 @@ export default function Admin() {
           <Users size={18} style={{ color: 'var(--cf-cyan)' }} />
           <div>
             <div style={{ fontWeight: 700 }}>
-              {current ? current.followers.toLocaleString() : '—'} <span style={{ color: 'var(--cf-text-secondary)', fontWeight: 500 }}>currently published</span>
+              {current ? `${current.followers.toLocaleString()} followers & ${current.views.toLocaleString()} views` : '—'} <span style={{ color: 'var(--cf-text-secondary)', fontWeight: 500 }}>currently published</span>
             </div>
             {current?.updatedAt && (
               <div style={{ fontSize: '0.78rem', color: 'var(--cf-text-muted)' }}>
@@ -129,6 +150,16 @@ export default function Admin() {
           min={0}
           value={followers}
           onChange={(e) => setFollowers(Number(e.target.value))}
+          style={inputStyle}
+        />
+
+        {/* Page Views value */}
+        <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--cf-text-secondary)', margin: '18px 0 6px' }}>Page views (rolling 28 days)</label>
+        <input
+          type="number"
+          min={0}
+          value={views}
+          onChange={(e) => setViews(Number(e.target.value))}
           style={inputStyle}
         />
 

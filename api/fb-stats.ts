@@ -10,12 +10,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
 
-  // The admin "Refresh from Facebook" button passes ?fresh=1 to bypass the cache
   const forceFresh = req.query.fresh === '1' || req.query.fresh === 'true';
 
-  // Serve cached value if still fresh
-  if (!forceFresh && cachedData !== null && Date.now() - cacheTime < CACHE_TTL_MS) {
-    return res.json({ ...cachedData, cached: true });
+  if (forceFresh) {
+    res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  } else {
+    // Cache at Vercel CDN edge globally for 1 hour, serve stale value during background revalidation (up to 10 mins)
+    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=3600, stale-while-revalidate=600');
   }
 
   const pageId = process.env.FB_PAGE_ID || '157376048062784';
@@ -23,13 +24,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const appId = process.env.FB_APP_ID;
   const appSecret = process.env.FB_APP_SECRET;
 
-  // Prefer Page Access Token; fall back to app token for backwards compatibility
+  // Prefer Page Access Token; fall back to app token
   const token = pageToken || (appId && appSecret ? `${appId}|${appSecret}` : null);
+
+  // Robust verified fallbacks if no credentials
+  const defaultFollowers = 66133;
+  const defaultViews = 8106;
 
   if (!token) {
     return res.json({
-      followers: cachedData?.followers ?? 35000,
-      views: cachedData?.views ?? 0,
+      followers: defaultFollowers,
+      views: defaultViews,
       cached: false,
       note: 'No FB credentials configured',
     });
@@ -47,17 +52,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (pageData.error) {
       console.error('Facebook API error (page):', pageData.error.message);
-      return res.status(502).json({
-        followers: cachedData?.followers ?? 35000,
-        views: cachedData?.views ?? 0,
+      return res.json({
+        followers: defaultFollowers,
+        views: defaultViews,
         error: pageData.error.message,
+        note: 'Serving fallback due to Facebook API error',
       });
     }
 
-    const followers = pageData.followers_count ?? pageData.fan_count ?? cachedData?.followers ?? 35000;
+    const followers = pageData.followers_count ?? pageData.fan_count ?? defaultFollowers;
 
     // ── 2. Fetch page views from Insights (requires read_insights) ──────────
-    // page_views_total for the last 28 days gives a rolling total page views
     const insightsUrl = `https://graph.facebook.com/v18.0/${pageId}/insights/page_views_total?period=days_28&access_token=${token}`;
     const insightsRes = await fetch(insightsUrl);
     const insightsData = await insightsRes.json() as {
@@ -65,24 +70,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       error?: { message: string };
     };
 
-    // Sum all returned daily values for total views in the period
-    let views = cachedData?.views ?? 0;
+    // Get the latest rolling total page views (last value in the array)
+    let views = defaultViews;
     if (!insightsData.error && insightsData.data?.[0]?.values) {
-      const total = insightsData.data[0].values.reduce((sum, v) => sum + (v.value || 0), 0);
-      if (total > 0) views = total;
+      const values = insightsData.data[0].values;
+      if (values.length > 0) {
+        const latestValue = values[values.length - 1]?.value;
+        if (typeof latestValue === 'number' && latestValue > 0) {
+          views = latestValue;
+        }
+      }
     } else if (insightsData.error) {
       console.warn('Insights API warning:', insightsData.error.message);
     }
 
-    cachedData = { followers, views };
-    cacheTime = Date.now();
-
     return res.json({ followers, views, cached: false });
   } catch (err) {
     console.error('Fetch failed:', err);
-    return res.status(500).json({
-      followers: cachedData?.followers ?? 35000,
-      views: cachedData?.views ?? 0,
+    return res.json({
+      followers: defaultFollowers,
+      views: defaultViews,
       error: 'Fetch failed',
     });
   }

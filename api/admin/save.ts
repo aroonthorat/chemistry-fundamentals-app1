@@ -36,6 +36,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const body = typeof req.body === 'string' ? safeParse(req.body) : req.body;
   const password = body?.password;
   const followers = Number(body?.followers);
+  const views = Number(body?.views ?? 0);
 
   if (password !== adminPassword) {
     return res.status(401).json({ error: 'Incorrect password' });
@@ -43,9 +44,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!Number.isFinite(followers) || followers < 0) {
     return res.status(400).json({ error: 'followers must be a non-negative number' });
   }
+  if (!Number.isFinite(views) || views < 0) {
+    return res.status(400).json({ error: 'views must be a non-negative number' });
+  }
 
   const content = JSON.stringify(
-    { followers: Math.round(followers), updatedAt: new Date().toISOString() },
+    { 
+      followers: Math.round(followers), 
+      views: Math.round(views),
+      updatedAt: new Date().toISOString() 
+    },
     null,
     2,
   ) + '\n';
@@ -75,7 +83,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       method: 'PUT',
       headers: { ...ghHeaders, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: `Update follower count to ${Math.round(followers)} via admin panel`,
+        message: `Update follower count to ${Math.round(followers)} and views to ${Math.round(views)} via admin panel`,
         content: Buffer.from(content, 'utf8').toString('base64'),
         branch,
         ...(sha ? { sha } : {}),
@@ -88,14 +96,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(502).json({ error: `GitHub commit failed (${putRes.status})` });
     }
 
-    return res.json({ ok: true, followers: Math.round(followers) });
+    return res.json({ ok: true, followers: Math.round(followers), views: Math.round(views) });
   } catch (err) {
     console.error('Admin save failed:', err);
     return res.status(500).json({ error: 'Save failed' });
   }
 }
 
-function safeParse(s: string): { password?: string; followers?: unknown } | undefined {
+function safeParse(s: string): { password?: string; followers?: unknown; views?: unknown } | undefined {
   try {
     return JSON.parse(s);
   } catch {
