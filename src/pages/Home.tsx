@@ -231,7 +231,7 @@ function Home() {
       {/* Infinite Molecule Ticker */}
       <div className="ticker-wrap">
         <div className="ticker">
-          {Array.from({ length: 4 }).map((_, loopIdx) => (
+          {Array.from({ length: 2 }).map((_, loopIdx) => (
             <Fragment key={loopIdx}>
               <div className="ticker-item"><span>NaCl</span> Sodium Chloride</div>
               <div className="ticker-item"><span>CO₂</span> Carbon Dioxide</div>
@@ -240,6 +240,14 @@ function Home() {
               <div className="ticker-item"><span>NH₃</span> Ammonia</div>
               <div className="ticker-item"><span>C₆H₁₂O₆</span> Glucose</div>
               <div className="ticker-item"><span>HCl</span> Hydrochloric Acid</div>
+              <div className="ticker-item"><span>H₂O</span> Water</div>
+              <div className="ticker-item"><span>HNO₃</span> Nitric Acid</div>
+              <div className="ticker-item"><span>NaOH</span> Sodium Hydroxide</div>
+              <div className="ticker-item"><span>C₂H₅OH</span> Ethanol</div>
+              <div className="ticker-item"><span>CaCO₃</span> Calcium Carbonate</div>
+              <div className="ticker-item"><span>NaHCO₃</span> Sodium Bicarbonate</div>
+              <div className="ticker-item"><span>C₆H₆</span> Benzene</div>
+              <div className="ticker-item"><span>CH₃COOH</span> Acetic Acid</div>
             </Fragment>
           ))}
         </div>
