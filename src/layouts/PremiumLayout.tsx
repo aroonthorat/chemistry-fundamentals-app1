@@ -1,8 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Outlet, useLocation, Link } from 'react-router-dom';
-import { Canvas } from '@react-three/fiber';
 import { Lock, FlaskConical, AlertTriangle, Skull, Play, ShieldCheck } from 'lucide-react';
-import AcidicBackground from '../components/AcidicBackground';
 import { motion } from 'framer-motion';
 
 const ACID_TYPES = [
@@ -17,8 +15,8 @@ const PremiumLayout = () => {
   const [showAd, setShowAd] = useState(false);
   const [adProgress, setAdProgress] = useState(0);
   const [activeAcid, setActiveAcid] = useState(ACID_TYPES[0]);
-  const [metalIntensity, setMetalIntensity] = useState(0);
-  const [metalColor, setMetalColor] = useState('#ffffff');
+  const [_metalIntensity, setMetalIntensity] = useState(0);
+  const [_metalColor, setMetalColor] = useState('#ffffff');
   const location = useLocation();
 
   // Memoize the context object to prevent Outlet re-renders
@@ -127,18 +125,7 @@ const PremiumLayout = () => {
   }
 
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: '#000' }}>
-      {/* 3D WebGL Background Layer */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <Canvas camera={{ position: [0, 0, 1] }} dpr={[1, 1.5]}>
-          <AcidicBackground 
-            color={activeAcid.color} 
-            metalIntensity={metalIntensity} 
-            metalColor={metalColor} 
-          />
-        </Canvas>
-      </div>
-
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: 'transparent' }}>
       {/* UI Overlay Layer */}
       <div style={{ position: 'relative', zIndex: 10, width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
         

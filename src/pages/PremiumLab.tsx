@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { Canvas } from '@react-three/fiber';
 import { motion } from 'framer-motion';
 import { Lock, FlaskConical, AlertTriangle, Skull } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import AcidicBackground from '../components/AcidicBackground';
 
 const ACID_TYPES = [
   { id: 'hcl', name: 'Hydrochloric Acid', color: '#00ff88', icon: <FlaskConical size={20} /> },
@@ -16,13 +14,7 @@ const PremiumLab: React.FC = () => {
   const [activeAcid, setActiveAcid] = useState(ACID_TYPES[0]);
 
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: '#000' }}>
-      {/* 3D WebGL Background Layer */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <Canvas camera={{ position: [0, 0, 1] }}>
-          <AcidicBackground color={activeAcid.color} />
-        </Canvas>
-      </div>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: 'transparent' }}>
 
       {/* UI Overlay Layer */}
       <div style={{ position: 'relative', zIndex: 10, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', pointerEvents: 'none' }}>
