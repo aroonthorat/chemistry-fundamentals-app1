@@ -83,6 +83,18 @@ interface Spark {
   color: string;
 }
 
+interface FumeParticle {
+  id: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  opacity: number;
+  color: string;
+  grow: number;
+}
+
 const AcidReactions = () => {
   const { setMetalIntensity, setMetalColor } = useOutletContext<PremiumContext>();
   
@@ -100,7 +112,9 @@ const AcidReactions = () => {
   const [reactionTemp, setReactionTemp] = useState(25); // Dynamic temperature
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const [sparks, setSparks] = useState<Spark[]>([]);
+  const [fumes, setFumes] = useState<FumeParticle[]>([]);
   const [metalX, setMetalX] = useState(100);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
   // Simulation Loop References
   const requestRef = useRef<number | null>(null);
@@ -412,6 +426,60 @@ const AcidReactions = () => {
         }
         return updated;
       });
+    } else {
+      setSparks([]);
+    }
+
+    // Handle Fumes (drifting gas/smoke escaping the mouth of the beaker)
+    if (isReacting && dissolvedPct < 98) {
+      setFumes(prev => {
+        const updated = prev.map(f => ({
+          ...f,
+          x: f.x + f.vx,
+          y: f.y + f.vy,
+          vy: f.vy - 0.05,
+          size: f.size + f.grow,
+          opacity: Math.max(0, f.opacity - 0.015)
+        })).filter(f => f.opacity > 0 && f.y > -80);
+
+        const fumesRate = reactionRate > 1.2 ? 3 : reactionRate > 0.6 ? 2 : 1;
+        const fumeSpawn = Math.floor(Math.random() * fumesRate) + 1;
+        if (fumeSpawn > 0 && prev.length < 40) {
+          const isNO2 = activeMetal.id === 'cu' && activeAcid.id === 'hno3';
+          const isGold = activeMetal.id === 'au' && activeAcid.id === 'aqua_regia';
+          
+          let color = 'rgba(240,240,255,0.45)'; // Default white steam/hydrogen mist
+          if (isNO2) {
+            color = '#a05c30'; // NO2 brown gas
+          } else if (isGold) {
+            color = '#e69d24'; // Aqua Regia fumes
+          }
+
+          for (let i = 0; i < fumeSpawn; i++) {
+            updated.push({
+              id: Math.random(),
+              x: 100 - 55 + (Math.random() - 0.5) * 12,
+              y: 35 - 80,
+              vx: (Math.random() - 0.5) * 0.8,
+              vy: -1.2 - Math.random() * 0.8,
+              size: 8 + Math.random() * 10,
+              opacity: isNO2 ? 0.75 : 0.45,
+              color: color,
+              grow: 0.15 + Math.random() * 0.2
+            });
+          }
+        }
+        return updated;
+      });
+    } else {
+      setFumes(prev => prev.map(f => ({
+        ...f,
+        x: f.x + f.vx,
+        y: f.y + f.vy,
+        vy: f.vy - 0.03,
+        size: f.size + f.grow,
+        opacity: Math.max(0, f.opacity - 0.025)
+      })).filter(f => f.opacity > 0));
     }
 
     requestRef.current = requestAnimationFrame(updateSimulation);
@@ -449,7 +517,22 @@ const AcidReactions = () => {
     setReactionTemp(temperature);
     setBubbles([]);
     setSparks([]);
+    setFumes([]);
     if (requestRef.current) cancelAnimationFrame(requestRef.current);
+  };
+
+  const handleMouseMoveTilt = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const box = card.getBoundingClientRect();
+    const x = e.clientX - box.left - box.width / 2;
+    const y = e.clientY - box.top - box.height / 2;
+    const tiltX = -(y / (box.height / 2)) * 10;
+    const tiltY = (x / (box.width / 2)) * 10;
+    setTilt({ x: tiltX, y: tiltY });
+  };
+
+  const handleMouseLeaveTilt = () => {
+    setTilt({ x: 0, y: 0 });
   };
 
   // Reactivity index badge mapping
@@ -458,6 +541,39 @@ const AcidReactions = () => {
     if (val >= 0.5) return { label: 'Vigorous', bg: 'rgba(255,170,0,0.2)', border: '#ffaa00' };
     if (val >= 0.2) return { label: 'Moderate', bg: 'rgba(0,255,136,0.2)', border: '#00ff88' };
     return { label: 'Slow/Inert', bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.2)' };
+  };
+
+  const getMetalFill = (metalId: string) => {
+    switch (metalId) {
+      case 'cu': return 'url(#metalCuGrad)';
+      case 'au': return 'url(#metalAuGrad)';
+      case 'zn': return 'url(#metalZnGrad)';
+      case 'fe': return 'url(#metalFeGrad)';
+      case 'mg': return 'url(#metalMgGrad)';
+      case 'ag': return 'url(#metalAgGrad)';
+      case 'ca':
+      case 'li': return 'url(#metalCaGrad)';
+      default: return 'url(#metalMetallicGrad)';
+    }
+  };
+
+  const getMetalFilter = (metalId: string) => {
+    if (['k', 'na'].includes(metalId)) return 'none';
+    if (['fe', 'zn'].includes(metalId)) return 'url(#roughMetalFilter)';
+    return 'url(#brushedMetalFilter)';
+  };
+
+  const getIonCloudColor = (metalId: string, acidId: string) => {
+    if (metalId === 'cu' && ['hno3', 'aqua_regia'].includes(acidId)) {
+      return '#0077b6';
+    }
+    if (metalId === 'fe') {
+      return '#94d2bd';
+    }
+    if (metalId === 'ca') {
+      return '#ffffff';
+    }
+    return 'transparent';
   };
 
   return (
@@ -582,7 +698,16 @@ const AcidReactions = () => {
 
         {/* 2. Virtual Chamber Simulator (Center - Col 5) */}
         <div className="lg:col-span-5 flex flex-col gap-6">
-          <div className="glass-panel p-6 rounded-[2rem] border border-white/10 flex flex-col items-center justify-between flex-1 relative min-h-[450px]">
+          <div 
+            onMouseMove={handleMouseMoveTilt}
+            onMouseLeave={handleMouseLeaveTilt}
+            className="glass-panel p-6 rounded-[2rem] border border-white/10 flex flex-col items-center justify-between flex-1 relative min-h-[450px]"
+            style={{
+              transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+              transition: 'transform 0.1s ease-out',
+              transformStyle: 'preserve-3d'
+            }}
+          >
             
             {/* Title / Info */}
             <div className="w-full flex items-center justify-between z-10">
@@ -678,6 +803,86 @@ const AcidReactions = () => {
                     <stop offset="50%" stopColor={dynamicLiquidColor} stopOpacity="0.38" />
                     <stop offset="100%" stopColor={activeMetal.id === 'ca' && dissolvedPct > 10 ? '#ffffff' : dynamicLiquidColor} stopOpacity="0.2" />
                   </linearGradient>
+
+                  {/* Brushed metal texture filter */}
+                  <filter id="brushedMetalFilter" x="0%" y="0%" width="100%" height="100%">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.08 0.9" numOctaves="2" result="noise" />
+                    <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 0.15 0" result="texture" />
+                    <feComposite operator="in" in2="SourceGraphic" result="textured" />
+                    <feSpecularLighting in="texture" specularExponent="22" specularConstant="0.95" lightingColor="#ffffff" result="light">
+                      <feDistantLight azimuth="45" elevation="60" />
+                    </feSpecularLighting>
+                    <feComposite operator="arithmetic" k1="0" k2="1" k3="1" k4="0" in="textured" in2="light" />
+                  </filter>
+
+                  {/* Rough/granular metal texture filter */}
+                  <filter id="roughMetalFilter" x="0%" y="0%" width="100%" height="100%">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.18" numOctaves="3" result="noise" />
+                    <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 0.22 0" result="texture" />
+                    <feComposite operator="in" in2="SourceGraphic" result="textured" />
+                    <feDiffuseLighting in="texture" surfaceScale="1.8" lightingColor="#ffffff" result="light">
+                      <feDistantLight azimuth="225" elevation="50" />
+                    </feDiffuseLighting>
+                    <feBlend mode="multiply" in="textured" in2="light" />
+                  </filter>
+
+                  {/* Copper gradient */}
+                  <linearGradient id="metalCuGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#ffd8be" />
+                    <stop offset="25%" stopColor="#e78554" />
+                    <stop offset="60%" stopColor="#b85822" />
+                    <stop offset="85%" stopColor="#8d3d13" />
+                    <stop offset="100%" stopColor="#5c2607" />
+                  </linearGradient>
+
+                  {/* Gold gradient */}
+                  <linearGradient id="metalAuGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#fff6c3" />
+                    <stop offset="30%" stopColor="#ffd700" />
+                    <stop offset="70%" stopColor="#e6a800" />
+                    <stop offset="100%" stopColor="#7a5c00" />
+                  </linearGradient>
+
+                  {/* Zinc gradient */}
+                  <linearGradient id="metalZnGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#f1f5f9" />
+                    <stop offset="35%" stopColor="#cbd5e1" />
+                    <stop offset="70%" stopColor="#94a3b8" />
+                    <stop offset="100%" stopColor="#475569" />
+                  </linearGradient>
+
+                  {/* Iron gradient */}
+                  <linearGradient id="metalFeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#94a3b8" />
+                    <stop offset="30%" stopColor="#64748b" />
+                    <stop offset="70%" stopColor="#475569" />
+                    <stop offset="100%" stopColor="#1e293b" />
+                  </linearGradient>
+
+                  {/* Magnesium gradient */}
+                  <linearGradient id="metalMgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#ffffff" />
+                    <stop offset="20%" stopColor="#f3f4f6" />
+                    <stop offset="55%" stopColor="#d1d5db" />
+                    <stop offset="85%" stopColor="#9ca3af" />
+                    <stop offset="100%" stopColor="#4b5563" />
+                  </linearGradient>
+
+                  {/* Silver gradient */}
+                  <linearGradient id="metalAgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#ffffff" />
+                    <stop offset="30%" stopColor="#e5e7eb" />
+                    <stop offset="65%" stopColor="#9ca3af" />
+                    <stop offset="100%" stopColor="#374151" />
+                  </linearGradient>
+
+                  {/* Calcium/Lithium gradient */}
+                  <linearGradient id="metalCaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#f8fafc" />
+                    <stop offset="40%" stopColor="#cbd5e1" />
+                    <stop offset="75%" stopColor="#94a3b8" />
+                    <stop offset="100%" stopColor="#475569" />
+                  </linearGradient>
                 </defs>
 
                 {/* Aqua background shadow inside the beaker */}
@@ -703,6 +908,20 @@ const AcidReactions = () => {
                   transition={{ repeat: Infinity, duration: Math.max(0.2, 1 - (reactionRate * 2)), ease: "easeInOut" }}
                 />
 
+                {/* Dissolution Ion Cloud */}
+                {isReacting && dissolvedPct > 0 && getIonCloudColor(activeMetal.id, activeAcid.id) !== 'transparent' && (
+                  <ellipse 
+                    cx={100}
+                    cy={215}
+                    rx={22 + (dissolvedPct / 100) * 48}
+                    ry={7 + (dissolvedPct / 100) * 13}
+                    fill={getIonCloudColor(activeMetal.id, activeAcid.id)}
+                    opacity={(dissolvedPct / 100) * 0.48}
+                    style={{ filter: 'blur(16px)' }}
+                    pointerEvents="none"
+                  />
+                )}
+
                 {/* Curved Liquid Surface Meniscus */}
                 <ellipse 
                   cx={100} 
@@ -717,6 +936,32 @@ const AcidReactions = () => {
                     filter: isReacting ? `drop-shadow(0 0 ${2 + (reactionRate * 6)}px ${dynamicLiquidColor})` : 'none'
                   }}
                 />
+
+                {/* Surface Meniscus Fizz / Foam */}
+                {isReacting && reactionPossible && dissolvedPct < 98 && (
+                  <motion.ellipse 
+                    cx={100}
+                    cy={110}
+                    rx={28}
+                    ry={4.5}
+                    fill="none"
+                    stroke="rgba(255,255,255,0.72)"
+                    strokeWidth="1.2"
+                    strokeDasharray="4 2 2 4"
+                    animate={{
+                      strokeDashoffset: [0, 20],
+                      ry: [4.2, 4.8, 4.2]
+                    }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: Math.max(0.3, 1.2 - reactionRate),
+                      ease: "linear"
+                    }}
+                    style={{
+                      filter: 'blur(0.5px) drop-shadow(0 0 3px #ffffff)'
+                    }}
+                  />
+                )}
 
                 {/* Active bubbles layer */}
                 {bubbles.map(b => {
@@ -752,14 +997,27 @@ const AcidReactions = () => {
                     y={210}
                     width={40 * (1 - dissolvedPct/100)}
                     height={12 * (1 - dissolvedPct/100)}
-                    rx={4 * (1 - dissolvedPct/100)}
-                    fill={activeMetal.color}
-                    stroke="#ffffff"
-                    strokeWidth="1"
-                    opacity={0.9}
+                    rx={2}
+                    fill={getMetalFill(activeMetal.id)}
+                    filter={getMetalFilter(activeMetal.id)}
+                    stroke="rgba(255,255,255,0.3)"
+                    strokeWidth="0.8"
+                    opacity={0.95}
                     style={{
-                      filter: `drop-shadow(0 0 ${4 + (reactionRate * 10)}px ${activeMetal.color})`
+                      filter: `drop-shadow(0 2px 4px rgba(0,0,0,0.5))`
                     }}
+                  />
+                )}
+
+                {/* Sinking Metal shadow for K/Na sphere */}
+                {isReacting && dissolvedPct < 100 && ['k', 'na'].includes(activeMetal.id) && (
+                  <ellipse 
+                    cx={metalX} 
+                    cy={111} 
+                    rx={6 * (1 - dissolvedPct/100)} 
+                    ry={1.5 * (1 - dissolvedPct/100)} 
+                    fill="rgba(0,0,0,0.35)" 
+                    style={{ filter: 'blur(0.8px)' }}
                   />
                 )}
 
@@ -771,10 +1029,35 @@ const AcidReactions = () => {
                     r={8 * (1 - dissolvedPct/100)}
                     fill="url(#metalMetallicGrad)"
                     stroke="#ffffff"
-                    strokeWidth="1"
-                    opacity={0.95}
+                    strokeWidth="0.8"
+                    opacity={0.98}
                     style={{
-                      filter: `drop-shadow(0 0 ${6 + (reactionRate * 15)}px ${activeMetal.color})`
+                      filter: `drop-shadow(0 0 ${4 + (reactionRate * 12)}px ${activeMetal.color})`
+                    }}
+                  />
+                )}
+
+                {/* Flame on top of floating Na/K */}
+                {isReacting && dissolvedPct < 100 && ['k', 'na'].includes(activeMetal.id) && (
+                  <motion.path
+                    d={`M ${metalX - 6} 104 Q ${metalX} 85 ${metalX + 6} 104 Z`}
+                    fill={activeMetal.flameColor || '#ffaa00'}
+                    opacity={0.85}
+                    animate={{
+                      d: [
+                        `M ${metalX - 6 * (1 - dissolvedPct/100)} ${108 - 4 * (1 - dissolvedPct/100)} Q ${metalX} ${108 - (18 + Math.random() * 8) * (1 - dissolvedPct/100)} ${metalX + 6 * (1 - dissolvedPct/100)} ${108 - 4 * (1 - dissolvedPct/100)} Z`,
+                        `M ${metalX - 5 * (1 - dissolvedPct/100)} ${108 - 4 * (1 - dissolvedPct/100)} Q ${metalX + (Math.random() - 0.5) * 4} ${108 - (16 + Math.random() * 6) * (1 - dissolvedPct/100)} ${metalX + 5 * (1 - dissolvedPct/100)} ${108 - 4 * (1 - dissolvedPct/100)} Z`,
+                        `M ${metalX - 7 * (1 - dissolvedPct/100)} ${108 - 4 * (1 - dissolvedPct/100)} Q ${metalX} ${108 - (20 + Math.random() * 10) * (1 - dissolvedPct/100)} ${metalX + 7 * (1 - dissolvedPct/100)} ${108 - 4 * (1 - dissolvedPct/100)} Z`
+                      ]
+                    }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 0.12,
+                      ease: "easeInOut"
+                    }}
+                    style={{
+                      filter: `blur(1.5px) drop-shadow(0 0 10px ${activeMetal.flameColor || '#ffaa00'})`,
+                      mixBlendMode: 'screen'
                     }}
                   />
                 )}
@@ -803,8 +1086,27 @@ const AcidReactions = () => {
                 <text x="100" y="153" fill="rgba(255,255,255,0.3)" fontSize="8" fontWeight="bold">200 mL</text>
               </svg>
 
-              {/* Dynamic Sparks escaping the neck of the Erlenmeyer (x center around 100 on 200 grid) */}
-              <div className="absolute top-[80px] left-[55px] w-24 h-40 pointer-events-none">
+              {/* Dynamic Sparks & Fumes escaping the neck of the Erlenmeyer (x center around 100 on 200 grid) */}
+              <div className="absolute top-[80px] left-[55px] w-24 h-40 pointer-events-none overflow-visible">
+                {/* Fume Gas Particles */}
+                {fumes.map(f => (
+                  <div
+                    key={f.id}
+                    className="absolute rounded-full blur-[8px]"
+                    style={{
+                      left: `${f.x}px`,
+                      top: `${f.y}px`,
+                      width: `${f.size}px`,
+                      height: `${f.size}px`,
+                      background: f.color,
+                      opacity: f.opacity,
+                      transform: 'translate(-50%, -50%)',
+                      mixBlendMode: 'screen'
+                    }}
+                  />
+                ))}
+
+                {/* Flame Sparks */}
                 {sparks.map(s => (
                   <div
                     key={s.id}
@@ -816,7 +1118,8 @@ const AcidReactions = () => {
                       height: `${s.size}px`,
                       background: s.color,
                       boxShadow: `0 0 10px ${s.color}, 0 0 20px ${s.color}`,
-                      opacity: s.size / 7
+                      opacity: s.size / 7,
+                      transform: 'translate(-50%, -50%)'
                     }}
                   />
                 ))}
